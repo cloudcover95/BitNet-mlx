@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bitnet-mlx"
+version = "1.0.0"
+description = "High-Performance BitNet b1.58 Ternary/Binary Quantization Engine for Apple Silicon"
+authors = [{name = "JuniorCloud LLC"}]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mlx>=0.10.0",
+    "mlx-lm>=0.11.0",
+    "numpy>=1.24.0",
+    "huggingface_hub>=0.23.0"
+]
+
+[project.scripts]
+bitnet-convert = "bitnet_mlx.cli:run_converter"
+
+[tool.setuptools.packages.find]
+where = ["src"]
