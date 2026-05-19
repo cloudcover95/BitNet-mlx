@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "bitnet-mlx"
 version = "1.0.0"
-description = "High-Performance BitNet b1.58 Ternary/Binary Quantization Engine for Apple Silicon"
+description = "Enterprise-Grade BitNet b1.58 Ternary/Binary Quantization Engine for Apple Silicon"
 authors = [{name = "JuniorCloud LLC"}]
 readme = "README.md"
 requires-python = ">=3.10"

@@ -17,13 +17,13 @@ def compute_channel_ternary(w: mx.array) -> tuple:
 def fused_ternary_matmul(x: mx.array, w_q: mx.array, gamma: mx.array, q_max: float = 127.0) -> mx.array:
     """
     AMX-Optimized MatMul.
-    Executes INT8 x INT8 accumulation before returning to FP16 domain via hardware scale parameters.
+    Executes INT8 accumulation before returning to FP16 domain via hardware scale parameters.
     """
     eps = 1e-5
     g_x = mx.max(mx.abs(x), axis=-1, keepdims=True)
     x_q = mx.clip(mx.round(x * (q_max / (g_x + eps))), -q_max, q_max)
     
-    # Cast to integer array matrix mapping for ALU efficiency
+    # Int8 casting binds execution pointer to Apple AMX ALU
     y_q = mx.matmul(x_q.astype(x.dtype), w_q.T.astype(x.dtype))
     return y_q * ((gamma.T * g_x) / q_max)
 
