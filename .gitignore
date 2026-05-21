@@ -5,6 +5,7 @@ build/
 dist/
 *.egg-info/
 assets/
+data/
 logs/
 *.safetensors
 *.parquet

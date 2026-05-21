@@ -1,0 +1,6 @@
+apiVersion: v2
+name: bitnet-mlx
+description: A Helm chart for deploying the BitNet-MLX Aether Sovereign Edge SDK
+type: application
+version: 16.0.0
+appVersion: "16.0.0"
