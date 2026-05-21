@@ -17,7 +17,7 @@ class GrokEvaluator:
             var_ret = min(mx.var(recon).item() / (mx.var(proxy).item() + 1e-9), 1.0)
 
             if mae > 0.018 or var_ret < 0.95:
-                logger.error(f"[-] Failure at {dim}x{dim}")
+                logger.error(f"[-] Failure at {dim}x{dim}. Threshold breached.")
                 return False
-            logger.info(f"[+] {dim}x{dim} passed")
+            logger.info(f"[+] {dim}x{dim} verified.")
         return True

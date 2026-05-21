@@ -12,6 +12,7 @@ class EdgeSubstrate:
 
 @mx.compile
 def compute_absmean_ternary_ste(w: mx.array, eps: float = 1e-5):
+    """Executes ternary bounding. SVD matrices explicitly excluded for O(N) efficiency."""
     outlier_cutoff = 3.0 * mx.std(w)
     outlier_mask = mx.abs(w) > outlier_cutoff
     w_core = mx.where(outlier_mask, 0.0, w)
@@ -23,7 +24,6 @@ def compute_absmean_ternary_ste(w: mx.array, eps: float = 1e-5):
     w_outliers = mx.where(outlier_mask, w, 0.0)
 
     return w_q_ste.astype(mx.float16), gamma, w_outliers.astype(mx.float16)
-
 
 class DynamicBitLinear(nn.Module):
     def __init__(self, in_d: int, out_d: int, bias: bool = False):
