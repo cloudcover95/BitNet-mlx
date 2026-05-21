@@ -3,26 +3,16 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bitnet-mlx"
-version = "27.0.0"
-description = "High-performance MLX-native ternary (1.58-bit) quantization for Apple Silicon — LLMs, VLMs, Audio & Swarm RPC"
+name = "bitnet_mlx"
+version = "29.0.0"
+description = "High-performance MLX-native ternary (1.58-bit) SDK for LLMs & VLMs."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
-keywords = ["mlx", "bitnet", "quantization", "apple-silicon", "omni", "1.58-bit", "rpc"]
 authors = [{name = "JuniorCloud LLC", email = "open-source@juniorcloud.com"}]
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0", "build>=0.10.0", "black", "isort", 
-    "pyarrow>=12.0.0", "pandas>=2.0.0", "fastapi>=0.100.0", 
-    "uvicorn>=0.23.0", "httpx>=0.24.0"
-]
+dev = ["pytest>=7.0.0", "black", "isort", "pyarrow>=12.0.0", "pandas>=2.0.0"]
 
 [project.scripts]
-bitnet-convert = "bitnet_mlx.cli:run_converter"
-bitnet-eval = "bitnet_mlx.cli:run_emulation_audit"
-bitnet-swarm = "bitnet_mlx.cli:run_swarm_node"
-
-[tool.setuptools.packages.find]
-where = ["src"]
+bitnet-mlx = "bitnet_mlx.cli:main"
