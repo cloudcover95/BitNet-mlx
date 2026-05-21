@@ -13,7 +13,7 @@ self.base_mae_target = 0.018
 self.results = []
 
 def execute_audit(self, export_json: bool = False) -> bool:
-    logger.info("[*] Initializing Formal Zenith/Aegis Kinematic Verification...")
+    logger.info("[*] Initializing Formal Ethereal Kinematic Verification...")
     global_status = True
 
     for dim in self.dims:
@@ -42,6 +42,6 @@ def execute_audit(self, export_json: bool = False) -> bool:
         Path("logs").mkdir(exist_ok=True)
         with open("logs/audit_manifest.json", "w") as f:
             json.dump(self.results, f, indent=4)
-        logger.info("[+] STE Verification payload mapped to logs/audit_manifest.json")
+        logger.info("[+] Verification payload mapped to logs/audit_manifest.json")
 
     return global_status

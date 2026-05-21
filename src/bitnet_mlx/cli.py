@@ -38,14 +38,14 @@ with open(shard, 'rb') as f:
 header_len = int.from_bytes(f.read(8), 'little')
 header = json.loads(f.read(header_len).decode('utf-8'))
 meta = header.get("metadata", {})
-if "juniorcloud-bitnet-v20-aegis-omni" in meta.get("format", ""):
+if "juniorcloud-bitnet-v21-ethereal" in meta.get("format", ""):
 tp = int(meta.get("c2v_total_params", 1))
-logger.info(f"\n[] --- SYSTEM CAPABILITY: AEGIS-OMNI SOVEREIGN MANIFEST ---")
+logger.info(f"\n[] --- SYSTEM CAPABILITY: ETHEREAL SOVEREIGN MANIFEST ---")
 logger.info(f"Topological Shard: {shard.name}")
 logger.info(f"Zero-State Ratio: {(int(meta.get('c2v_zeros', 0)) / tp) * 100:.2f}%")
 logger.info(f"FP16 Outliers: {(int(meta.get('c2v_outliers', 0)) / tp) * 100:.4f}%")
 return
-logger.error("[-] Payload missing. Not an Aegis-Omni array.")
+logger.error("[-] Payload missing. Not an Ethereal array.")
 
 def run_c2v_report():
 log_file = Path("logs/c2v_telemetry.parquet")

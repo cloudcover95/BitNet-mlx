@@ -4,6 +4,7 @@ from .power_matrix import ThermalSubstrate
 
 @mx.compile
 def compute_hybrid_ternary_ste(w: mx.array, eps: float = 1e-5) -> tuple:
+"""Enforces the Grok validation threshold utilizing STE backward hooks and 3-sigma FP16 outliers."""
 outlier_cutoff = 3.0 * mx.std(w)
 outlier_mask = mx.abs(w) > outlier_cutoff
 w_core = mx.where(outlier_mask, 0.0, w)
@@ -12,6 +13,14 @@ w_q_raw = mx.round(mx.clip(w_core / (gamma + eps), -1.0, 1.0))
 w_q_ste = w_core + mx.stop_gradient(w_q_raw - w_core)
 w_outliers = mx.where(outlier_mask, w, 0.0)
 return w_q_ste.astype(mx.float16), gamma, w_outliers.astype(mx.float16)
+
+@mx.compile
+def dynamic_kv_cache_quantize(kv: mx.array, bits: int = 4) -> tuple:
+"""Compresses the attention context cache dynamically to sustain long-context AMX computation."""
+q_max = (2  (bits - 1)) - 1.0
+scale = mx.max(mx.abs(kv), axis=-1, keepdims=True) / q_max
+kv_q = mx.round(kv / (scale + 1e-5))
+return mx.clip(kv_q, -q_max, q_max).astype(mx.int8), scale.astype(mx.float16)
 
 class DynamicBitLinear(nn.Module):
 def init(self, in_d: int, out_d: int, bias: bool = False, activation_bits: int = 8):
@@ -26,7 +35,6 @@ self.bias = None
 def __call__(self, x: mx.array) -> mx.array:
     w_q_ste, gamma, w_outliers = compute_hybrid_ternary_ste(self.weight)
     
-    # Thermal-Kinematic Dynamic Precision
     current_state = ThermalSubstrate.query_thermal_state()
     active_bits = 4 if current_state == "a4" else self.bits
     

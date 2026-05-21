@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "juniorcloud-bitnet-mlx"
-version = "20.0.0"
-description = "Aegis-Omni Sovereign SDK: Binary-Packed Swarm RPC, Thermal Routing, QAT STE Kernels"
+version = "21.0.0"
+description = "Ethereal Sovereign SDK: Dynamic KV-Cache Quantization, Binary Swarm RPC, AMX Fusion"
 authors = [{name = "JuniorCloud LLC"}]
 readme = "README.md"
 requires-python = ">=3.11"

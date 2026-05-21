@@ -10,7 +10,6 @@ logger = logging.getLogger("BitNet.Swarm")
 app = FastAPI(title="JuniorCloud Swarm Node")
 
 class BinaryRPC:
-"""Binary-packed tensor serialization for O(N) network throughput."""
 @staticmethod
 def pack_tensor(t: mx.array) -> bytes:
 arr = np.array(t)

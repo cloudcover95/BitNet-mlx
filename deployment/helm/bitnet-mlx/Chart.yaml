@@ -1,6 +1,0 @@
-apiVersion: v2
-name: bitnet-mlx
-description: A Helm chart for deploying the BitNet-MLX Aegis-Omni Sovereign Edge SDK
-type: application
-version: 20.0.0
-appVersion: "20.0.0"

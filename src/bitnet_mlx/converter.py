@@ -31,7 +31,7 @@ def compile_manifold(self, model_id_or_path: str, output_dir: str):
     total_params, zeros, pos_ones, neg_ones, outliers = 0, 0, 0, 0, 0
 
     for shard in list(src_path.glob("*.safetensors")):
-        logger.info(f"[*] Compiling Aegis-Omni logic gates: {shard.name}")
+        logger.info(f"[*] Compiling Ethereal logic gates: {shard.name}")
         weights = mx.load(str(shard))
         ternary_dict = {}
         
@@ -66,7 +66,7 @@ def compile_manifold(self, model_id_or_path: str, output_dir: str):
                 ternary_dict[name] = tensor
         
         metadata = {
-            "format": "juniorcloud-bitnet-v20-aegis-omni",
+            "format": "juniorcloud-bitnet-v21-ethereal",
             "c2v_total_params": str(total_params),
             "c2v_zeros": str(zeros),
             "c2v_pos_ones": str(pos_ones),
