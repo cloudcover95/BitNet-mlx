@@ -1,4 +1,4 @@
-.PHONY: install test lint eval clean build
+.PHONY: install test lint eval swarm clean build
 
 install:
 	pip install --upgrade pip
@@ -12,6 +12,9 @@ lint:
 
 eval:
 	bitnet-eval
+
+swarm:
+	bitnet-swarm --port 9000
 
 clean:
 	rm -rf build/ dist/ *.egg-info/ .pytest_cache/ logs/*.parquet

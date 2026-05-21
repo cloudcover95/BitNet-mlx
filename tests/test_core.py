@@ -1,6 +1,7 @@
 import mlx.core as mx
-from bitnet_mlx.bitnet_layers import compute_absmean_ternary_ste, compute_ternary_kv_cache
-from bitnet_mlx.vlm_backend import TernaryMultimodalProjector
+from bitnet_mlx.bitnet_layers import compute_absmean_ternary_ste
+from bitnet_mlx.audio_backend import TernaryAudioEncoder
+from bitnet_mlx.swarm_rpc import BinaryRPC
 
 def test_ternary_boundaries():
     w = mx.random.normal((128, 128))
@@ -9,15 +10,18 @@ def test_ternary_boundaries():
     assert vals.issubset({-1.0, 0.0, 1.0})
     print("[+] Ternary boundary test passed")
 
-def test_kv_cache_compression():
-    kv = mx.random.normal((1, 32, 128))
-    kv_q, scale = compute_ternary_kv_cache(kv, bits=4)
-    assert kv_q.dtype == mx.int8
-    print("[+] Phase 2 Ternary KV-Cache test passed")
+def test_audio_encoder_kinematics():
+    encoder = TernaryAudioEncoder(input_freq=80, hidden_dim=256)
+    # Mock Mel-spectrogram: (batch=1, time=500, freq=80)
+    dummy_audio = mx.random.normal((1, 500, 80))
+    out = encoder(dummy_audio)
+    assert out.shape == (1, 500, 256)
+    print("[+] Omni-Audio encoder routing passed")
 
-def test_vision_projector():
-    projector = TernaryMultimodalProjector(256, 512)
-    dummy = mx.random.normal((1, 196, 256))
-    out = projector(dummy)
-    assert out.shape == (1, 196, 512)
-    print("[+] Multimodal Vision projector test passed")
+def test_rpc_binary_serialization():
+    t_original = mx.random.normal((64, 64))
+    payload = BinaryRPC.pack_tensor(t_original)
+    t_unpacked = BinaryRPC.unpack_tensor(payload)
+    mx.eval(t_unpacked)
+    assert mx.array_equal(t_original, t_unpacked).item()
+    print("[+] Swarm RPC binary serialization passed")

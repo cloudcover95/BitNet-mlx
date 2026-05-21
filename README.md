@@ -1,8 +1,8 @@
 # BitNet-MLX
 
-**High-performance MLX-native ternary (1.58-bit) and binary quantization for Apple Silicon.**
+**High-performance MLX-native ternary (1.58-bit) quantization for Apple Silicon.**
 
-Engineered by JuniorCloud LLC. Focused on **AbsMean scaling**, drop-in `DynamicBitLinear` layers, and end-to-end Hugging Face → MLX conversion pipelines. Fully optimized for local AMX execution without vendor lock-in.
+Focused on **AbsMean scaling**, drop-in `DynamicBitLinear` layers, and Omni-modality execution (Text, Vision, Audio). Fully optimized for local AMX execution without vendor lock-in, enabling sovereign edge-native clusters.
 
-## Phase 2: VLM Sovereign Integration
-Natively bridges multi-modality targets (`TernaryVisionEncoder`, `VLMCompatibilityLayer`) while executing $O(N)$ ternary KV-cache compression layers directly within Apple Silicon's unified memory registers.
+## Phase 3: Omni-Swarm Integration
+Natively bridges Audio topologies (`TernaryAudioEncoder`) and multi-node tensor sharding via `Binary RPC Swarm`. Dynamic $\gamma$ scaling allows the engine to autonomously adjust AbsMean mapping based on the ingested modality, maintaining strict $O(N)$ efficiency.
