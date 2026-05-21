@@ -1,36 +1,21 @@
-.PHONY: install test audit clean build publish telemetry deploy train conda swarm
+.PHONY: install test lint eval clean build
 
 install:
 	pip install --upgrade pip
 	pip install -e .[dev]
 
 test:
-	pytest tests/ -v --disable-warnings
+	pytest tests/ -v
 
-audit:
-	bitnet-audit --export-json
+lint:
+	black src/ tests/
 
-telemetry:
-	python -c "from bitnet_mlx.telemetry import EdgePrometheusServer; EdgePrometheusServer.start()"
-
-deploy:
-	helm upgrade --install bitnet-edge deployment/helm/bitnet-mlx --namespace juniorcloud-system --create-namespace
-
-train:
-	bitnet-qat --model ./assets/ternary_phi3 --dataset ./data/finetune.jsonl --epochs 1
-
-swarm:
-	bitnet-swarm --port 9000
+eval:
+	bitnet-eval
 
 clean:
 	rm -rf build/ dist/ *.egg-info/ .pytest_cache/
-	find . -type d -name __pycache__ -exec rm -rf {} +
+	find . -name __pycache__ -exec rm -rf {} +
 
 build: clean
 	python -m build
-
-publish: build
-	twine upload dist/*
-
-conda:
-	conda build conda/

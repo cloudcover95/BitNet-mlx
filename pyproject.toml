@@ -3,47 +3,22 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "juniorcloud-bitnet-mlx"
-version = "21.0.0"
-description = "Ethereal Sovereign SDK: Dynamic KV-Cache Quantization, Binary Swarm RPC, AMX Fusion"
-authors = [{name = "JuniorCloud LLC"}]
+name = "bitnet-mlx"
+version = "22.0.0"
+description = "High-performance MLX-native ternary (1.58-bit) and binary quantization for Apple Silicon."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
-classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-]
-dependencies = [
-    "mlx>=0.10.0",
-    "mlx-lm>=0.12.0",
-    "numpy>=1.24.0",
-    "huggingface_hub>=0.23.0",
-    "pyarrow>=12.0.0",
-    "pandas>=2.0.0",
-    "prometheus_client>=0.17.0",
-    "psutil>=5.9.0",
-    "fastapi>=0.100.0",
-    "uvicorn>=0.23.0",
-    "httpx>=0.24.0"
-]
+keywords = ["mlx", "bitnet", "quantization", "apple-silicon", "llm", "1.58-bit", "ternary"]
+authors = [{name = "JuniorCloud LLC", email = "open-source@juniorcloud.com"}]
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0",
-    "build>=0.10.0",
-    "twine>=4.0.2"
-]
+dev = ["pytest>=7.0.0", "build>=0.10.0", "twine>=4.0.2", "black", "isort"]
 
 [project.scripts]
 bitnet-convert = "bitnet_mlx.cli:run_converter"
-bitnet-audit = "bitnet_mlx.cli:run_emulation_audit"
-bitnet-c2v = "bitnet_mlx.cli:run_c2v_report"
+bitnet-eval = "bitnet_mlx.cli:run_emulation_audit"
 bitnet-chat = "bitnet_mlx.cli:run_inference_stream"
-bitnet-qat = "bitnet_mlx.cli:run_qat_pipeline"
-bitnet-inspect = "bitnet_mlx.cli:run_metadata_inspector"
-bitnet-swarm = "bitnet_mlx.cli:run_swarm_node"
 
 [tool.setuptools.packages.find]
 where = ["src"]

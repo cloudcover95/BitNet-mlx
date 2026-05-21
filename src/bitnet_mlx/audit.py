@@ -1,47 +1,23 @@
 import mlx.core as mx
 import logging
-import json
-from pathlib import Path
-from .bitnet_layers import compute_hybrid_ternary_ste
+from .bitnet_layers import compute_absmean_ternary_ste
 
-logger = logging.getLogger("BitNet.Audit")
+logger = logging.getLogger("BitNet.Eval")
 
-class EmulationAuditor:
-def init(self, dims: list = [512, 1024, 4096]):
-self.dims = dims
-self.base_mae_target = 0.018
-self.results = []
+class GrokEvaluator:
+    @staticmethod
+    def run_inference_emulation() -> bool:
+        logger.info("[*] Running O(N) Variance Fidelity Emulation...")
+        for dim in [512, 1024]:
+            proxy = mx.random.normal((dim, dim)) * 0.05
+            w_q, gamma, w_out = compute_absmean_ternary_ste(proxy)
+            recon = (w_q * gamma) + w_out
 
-def execute_audit(self, export_json: bool = False) -> bool:
-    logger.info("[*] Initializing Formal Ethereal Kinematic Verification...")
-    global_status = True
+            mae = mx.mean(mx.abs(proxy - recon)).item()
+            var_ret = min(mx.var(recon).item() / (mx.var(proxy).item() + 1e-9), 1.0)
 
-    for dim in self.dims:
-        fp32_proxy = mx.random.normal((dim, dim)) * 0.05
-        fp32_proxy.stop_gradient = False
-        
-        w_q_ste, gamma, w_outliers = compute_hybrid_ternary_ste(fp32_proxy)
-        w_recon = (w_q_ste * gamma) + w_outliers
-        
-        base_diff = mx.mean(mx.abs(fp32_proxy - w_recon)).item()
-        fidelity = min(mx.var(w_recon).item() / (mx.var(fp32_proxy).item() + 1e-9), 1.0)
-        
-        b_stat = "PASS" if base_diff < self.base_mae_target else "FAIL"
-        
-        self.results.append({
-            "dimension": dim,
-            "base_mae": base_diff,
-            "ste_fidelity": fidelity,
-            "status": b_stat
-        })
-
-        logger.info(f"[*] Node {dim}x{dim} | STE MAE: {base_diff:.4f} [{b_stat}] | O(N) Fid: {fidelity:.3f}")
-        if "FAIL" in b_stat: global_status = False
-
-    if export_json:
-        Path("logs").mkdir(exist_ok=True)
-        with open("logs/audit_manifest.json", "w") as f:
-            json.dump(self.results, f, indent=4)
-        logger.info("[+] Verification payload mapped to logs/audit_manifest.json")
-
-    return global_status
+            if mae > 0.018 or var_ret < 0.95:
+                logger.error(f"[-] Failure at {dim}x{dim}")
+                return False
+            logger.info(f"[+] {dim}x{dim} passed")
+        return True

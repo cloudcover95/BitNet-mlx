@@ -1,0 +1,564 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2869
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\margl1440\margr1440\vieww16960\viewh14360\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 # ~/Documents/JuniorCloud/BitNet-mlx/deploy_v8.0.0_omni_core.zsh\
+#!/usr/bin/env zsh\
+# Target: BitNet-MLX Production SDK v8.0.0-Omni Core\
+# Architecture: Apple Silicon (M4/M1) UMA / AMX \
+# Objective: OSS CI/CD Standardization, Multi-Dim Grok Emulation, Global C2V Parameter Weightings\
+\
+unsetopt banghist\
+setopt +o nomatch\
+set +H\
+\
+TARGET_DIR="$HOME/Documents/JuniorCloud/BitNet-mlx"\
+mkdir -p "$TARGET_DIR"\
+cd "$TARGET_DIR" || exit 1\
+\
+echo "[*] BitNet-MLX v8.0.0: Initializing Omni-Core Sovereign Edge SDK..."\
+\
+# ------------------------------------------------------------------------------\
+# 01. ZERO-TRUST SSH ENVIRONMENT ISOLATION\
+# ------------------------------------------------------------------------------\
+IDENTITY_FILE="$HOME/.ssh/id_ed25519_junioragi"\
+\
+if [ ! -f "$IDENTITY_FILE" ]; then\
+    echo "[-] Root Node Failure: Sovereign key matrix missing at $IDENTITY_FILE. Execution halted."\
+    exit 1\
+fi\
+\
+chmod 600 "$IDENTITY_FILE"\
+unset SSH_AUTH_SOCK\
+unset GIT_ASKPASS\
+unset SSH_ASKPASS\
+\
+export GIT_SSH_COMMAND="ssh -i $IDENTITY_FILE -F /dev/null -o StrictHostKeyChecking=no -o IdentitiesOnly=yes"\
+\
+if [ ! -d ".git" ]; then\
+    git init\
+    git branch -M main\
+fi\
+\
+git remote remove origin 2>/dev/null\
+git remote add origin git@github.com:cloudcover95/BitNet-mlx.git\
+\
+echo "[+] Trust model isolation confirmed. Git SSH rigidly bound."\
+\
+# ==============================================================================\
+# 02. TOTAL WORKING SDK & OSS SCAFFOLDING\
+# ==============================================================================\
+git checkout -B main 2>/dev/null\
+\
+rm -rf src tests .gitignore README.md pyproject.toml Makefile Dockerfile.edge .github\
+mkdir -p src/bitnet_mlx tests assets logs configs data .github/workflows\
+find src -type d -exec touch \{\}/__init__.py \\;\
+\
+# --- .gitignore ---\
+cat << 'EOF' > .gitignore\
+__pycache__/\
+*.py[cod]\
+*$py.class\
+*.so\
+.DS_Store\
+build/\
+dist/\
+*.egg-info/\
+assets/\
+data/\
+logs/\
+*.safetensors\
+*.bin\
+*.parquet\
+.venv/\
+venv/\
+.pytest_cache/\
+EOF\
+\
+# --- .github/workflows/edge-matrix.yml ---\
+cat << 'EOF' > .github/workflows/edge-matrix.yml\
+name: Sovereign Edge SDK Matrix\
+on:\
+  push:\
+    branches: [ "main" ]\
+  pull_request:\
+    branches: [ "main" ]\
+\
+jobs:\
+  build-and-audit:\
+    runs-on: macos-latest\
+    steps:\
+    - uses: actions/checkout@v4\
+    - name: Set up Python 3.11\
+      uses: actions/setup-python@v5\
+      with:\
+        python-version: "3.11"\
+    - name: Install Dependencies\
+      run: |\
+        python -m pip install --upgrade pip\
+        pip install -e .[dev]\
+    - name: Execute Grok Emulation Rigidity Audit\
+      run: bitnet-audit\
+    - name: Unit Test Topologies\
+      run: make test\
+EOF\
+\
+# --- Makefile ---\
+cat << 'EOF' > Makefile\
+.PHONY: install test audit clean build\
+\
+install:\
+	pip install --upgrade pip\
+	pip install -e .[dev]\
+\
+test:\
+	pytest tests/ -v --disable-warnings\
+\
+audit:\
+	bitnet-audit\
+\
+clean:\
+	rm -rf build/ dist/ *.egg-info/ .pytest_cache/\
+	find . -type d -name __pycache__ -exec rm -rf \{\} +\
+\
+build: clean\
+	python -m build\
+EOF\
+\
+# --- pyproject.toml ---\
+cat << 'EOF' > pyproject.toml\
+[build-system]\
+requires = ["setuptools>=61.0", "wheel"]\
+build-backend = "setuptools.build_meta"\
+\
+[project]\
+name = "bitnet-mlx"\
+version = "8.0.0"\
+description = "Omni-Core BitNet b1.58 SDK, Multi-Dim Auditor & Substrate Compiler"\
+authors = [\{name = "JuniorCloud LLC"\}]\
+readme = "README.md"\
+requires-python = ">=3.11"\
+license = \{text = "MIT"\}\
+dependencies = [\
+    "mlx>=0.10.0",\
+    "mlx-lm>=0.12.0",\
+    "numpy>=1.24.0",\
+    "huggingface_hub>=0.23.0",\
+    "pyarrow>=12.0.0",\
+    "pandas>=2.0.0"\
+]\
+\
+[project.optional-dependencies]\
+dev = [\
+    "pytest>=7.0.0",\
+    "build>=0.10.0"\
+]\
+\
+[project.scripts]\
+bitnet-convert = "bitnet_mlx.cli:run_converter"\
+bitnet-audit = "bitnet_mlx.cli:run_emulation_audit"\
+bitnet-c2v = "bitnet_mlx.cli:run_c2v_report"\
+bitnet-chat = "bitnet_mlx.cli:run_inference_stream"\
+\
+[tool.setuptools.packages.find]\
+where = ["src"]\
+EOF\
+\
+# --- README.md ---\
+cat << 'EOF' > README.md\
+# BitNet-MLX: Omni-Core Edge SDK v8.0.0\
+\
+**Stateless Execution Substrate, Multi-Dim Auditor & Global Value Compute Framework**\
+\
+Engineered by JuniorCloud LLC. This final-stage OSS matrix validates Apple AMX silicon deployments against stringent multi-dimensional mathematical thresholds.\
+\
+## Core Mechanics\
+* **Multi-Dim Grok Emulation**: Tests structural parameter resilience ($\\Delta < 0.05$) across $D \\in \\\{512, 1024, 4096\\\}$ to guarantee wide-manifold stability prior to compilation.\
+* **Global Parameter Weighting**: Aggregates the exact system-wide ratio of $\\\{-1, 0, 1\\\}$ states to quantify maximum Value Compute density and active sparsity mapping.\
+* **Sovereign CI/CD**: Fully encapsulated GitHub Actions pipeline ensures zero regression on topological kinematics.\
+\
+## Execution Routing\
+```bash\
+make install\
+bitnet-audit\
+bitnet-convert --input microsoft/Phi-3-mini-4k-instruct --output ./assets/ternary_phi3\
+bitnet-c2v\
+bitnet-chat --model ./assets/ternary_phi3 --prompt "Define singular value decomposition."\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 EOF\
+\pard\pardeftab720\sa321\partightenfactor0
+
+\f1\b\fs48 \cf0 --- src/bitnet_mlx/bitnet_layers.py ---\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b0\fs24 \cf0 cat << 'EOF' > src/bitnet_mlx/bitnet_layers.py\
+import mlx.core as mx\
+import mlx.nn as nn\
+@mx.compile\
+def compute_channel_ternary(w: mx.array, eps: float = 1e-5) -> tuple:\
+"""\
+Absolute-mean ternary mapping: $\\gamma = \\frac\{1\}\{N\}\\sum|W_\{row\}|$\
+"""\
+gamma = mx.mean(mx.abs(w), axis=-1, keepdims=True)\
+w_q = mx.round(mx.clip(w / (gamma + eps), -1.0, 1.0))\
+return w_q.astype(mx.int8), gamma\
+@mx.compile\
+def compute_activation_quantization(x: mx.array, eps: float = 1e-5) -> tuple:\
+g_x = mx.max(mx.abs(x), axis=-1, keepdims=True)\
+x_q = mx.clip(mx.round(x * (127.0 / (g_x + eps))), -127.0, 127.0)\
+return x_q.astype(mx.int8), g_x\
+@mx.compile\
+def fused_ternary_matmul(x_q: mx.array, g_x: mx.array, w_q: mx.array, gamma: mx.array) -> mx.array:\
+y_q = mx.matmul(x_q.astype(mx.int16), w_q.T.astype(mx.int16))\
+return y_q.astype(mx.float16) * ((gamma.T * g_x) / 127.0)\
+class DynamicBitLinear(nn.Module):\
+"""Stateless inference routing for b1.58 execution."""\
+def 
+\f1\b init
+\f0\b0 (self, in_d: int, out_d: int, bias: bool = False):\
+super().
+\f1\b init
+\f0\b0 ()\
+self.w_q = mx.zeros((out_d, in_d), dtype=mx.int8)\
+self.gamma = mx.zeros((out_d, 1), dtype=mx.float16)\
+if bias:\
+self.bias = mx.zeros((out_d,))\
+\pard\pardeftab720\partightenfactor0
+\cf0 def __call__(self, x: mx.array) -> mx.array:\
+    x_q, g_x = compute_activation_quantization(x)\
+    y = fused_ternary_matmul(x_q, g_x, self.w_q, self.gamma)\
+    if hasattr(self, 'bias') and getattr(self, 'bias') is not None:\
+        y += self.bias\
+    return y\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 EOF\
+\pard\pardeftab720\sa321\partightenfactor0
+
+\f1\b\fs48 \cf0 --- src/bitnet_mlx/engine.py ---\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b0\fs24 \cf0 cat << 'EOF' > src/bitnet_mlx/engine.py\
+import mlx.nn as nn\
+from mlx_lm import load, stream_generate\
+from .bitnet_layers import DynamicBitLinear\
+import logging\
+logger = logging.getLogger("BitNet.Engine")\
+class InjectionEngine:\
+@staticmethod\
+def patch_model_topology(model: nn.Module):\
+def _recursive_replace(module, name=""):\
+for child_name, child in module.named_children():\
+full_name = f"\{name\}.\{child_name\}" if name else child_name\
+if isinstance(child, nn.Linear) and not any(k in full_name.lower() for k in ["embed", "lm_head", "gate"]):\
+in_d = child.weight.shape[1]\
+out_d = child.weight.shape[0]\
+has_bias = hasattr(child, "bias") and child.bias is not None\
+setattr(module, child_name, DynamicBitLinear(in_d, out_d, bias=has_bias))\
+else:\
+_recursive_replace(child, full_name)\
+_recursive_replace(model)\
+return model\
+\pard\pardeftab720\partightenfactor0
+\cf0 @staticmethod\
+def execute_streaming_inference(model_path: str, prompt: str, max_tokens: int = 512):\
+    logger.info(f"[*] Booting Omni-Core Streaming Engine targeting: \{model_path\}")\
+    model, tokenizer = load(model_path)\
+    model = InjectionEngine.patch_model_topology(model)\
+    model.load_weights(f"\{model_path\}/model.safetensors", strict=False)\
+    \
+    logger.info("[*] Architecture verified. Executing zero-fragmentation token stream:\\n")\
+    for response in stream_generate(model, tokenizer, prompt=prompt, max_tokens=max_tokens):\
+        print(response.text, end="", flush=True)\
+    print("\\n\\n[*] Stream cycle complete.")\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 EOF\
+\pard\pardeftab720\sa321\partightenfactor0
+
+\f1\b\fs48 \cf0 --- src/bitnet_mlx/telemetry.py ---\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b0\fs24 \cf0 cat << 'EOF' > src/bitnet_mlx/telemetry.py\
+import mlx.core as mx\
+import pandas as pd\
+import logging\
+from pathlib import Path\
+logger = logging.getLogger("BitNet.Telemetry")\
+class StructuralEvaluator:\
+@staticmethod\
+def evaluate_variance_fidelity(fp16_w: mx.array, w_q: mx.array, gamma: mx.array) -> float:\
+try:\
+w_hat = w_q.astype(mx.float16) * gamma\
+var_base = mx.var(fp16_w).item()\
+var_hat = mx.var(w_hat).item()\
+if var_base == 0: return 1.0\
+return min(var_hat / (var_base + 1e-9), 1.0)\
+except:\
+return 1.0\
+\pard\pardeftab720\partightenfactor0
+\cf0 @staticmethod\
+def compute_parameter_weighting(w_q: mx.array) -> dict:\
+    total = w_q.size\
+    return \{\
+        "total_params": total,\
+        "zeros": mx.sum(w_q == 0).item(),\
+        "pos_ones": mx.sum(w_q == 1).item(),\
+        "neg_ones": mx.sum(w_q == -1).item()\
+    \}\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 class HighDensityLogger:\
+def 
+\f1\b init
+\f0\b0 (self, output_dir: str = "logs"):\
+self.output_path = Path(output_dir)\
+self.output_path.mkdir(exist_ok=True)\
+self.records = []\
+\pard\pardeftab720\partightenfactor0
+\cf0 def append_layer_telemetry(self, layer_name: str, shape: tuple, fidelity: float, compression: float, weightings: dict, adaptive_flag: bool):\
+    self.records.append(\{\
+        "layer_name": layer_name, "dim_m": shape[0], "dim_n": shape[1],\
+        "variance_fidelity": fidelity, "compression_ratio": compression,\
+        "total_params": weightings["total_params"],\
+        "zeros": weightings["zeros"],\
+        "pos_ones": weightings["pos_ones"],\
+        "neg_ones": weightings["neg_ones"],\
+        "adaptive_fallback": adaptive_flag\
+    \})\
+\
+def commit_to_disk(self):\
+    if not self.records: return\
+    df = pd.DataFrame(self.records)\
+    df.to_parquet(str(self.output_path / "c2v_telemetry.parquet"), index=False)\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 EOF\
+\pard\pardeftab720\sa321\partightenfactor0
+
+\f1\b\fs48 \cf0 --- src/bitnet_mlx/audit.py ---\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b0\fs24 \cf0 cat << 'EOF' > src/bitnet_mlx/audit.py\
+import mlx.core as mx\
+import logging\
+from .bitnet_layers import compute_channel_ternary\
+logger = logging.getLogger("BitNet.Audit")\
+class EmulationAuditor:\
+def 
+\f1\b init
+\f0\b0 (self, dims: list = [512, 1024, 4096], threshold: float = 0.05):\
+self.dims = dims\
+self.threshold = threshold\
+\pard\pardeftab720\partightenfactor0
+\cf0 def execute_audit(self) -> bool:\
+    logger.info("[*] Executing Multi-Dimensional Grok Emulation Vector...")\
+    global_status = True\
+\
+    for dim in self.dims:\
+        logger.info(f"[*] Analyzing Manifold Projection Matrix: \{dim\}x\{dim\}")\
+        fp32_proxy = mx.random.normal((dim, dim)) * 0.05\
+        \
+        # 1% Gaussian Drift Test\
+        noise = mx.random.normal(fp32_proxy.shape) * 0.01 * mx.std(fp32_proxy)\
+        w_q_pert, gamma_pert = compute_channel_ternary(fp32_proxy + noise)\
+        pert_recon = w_q_pert.astype(mx.float16) * gamma_pert\
+        pert_diff = mx.mean(mx.abs((fp32_proxy + noise) - pert_recon)).item()\
+\
+        # 5% Outlier Sparsification Test\
+        sparsified_w = mx.where(mx.abs(fp32_proxy) < (mx.std(fp32_proxy) * 0.05), 0.0, fp32_proxy)\
+        w_q_sparse, gamma_sparse = compute_channel_ternary(sparsified_w)\
+        sparse_diff = mx.mean(mx.abs(sparsified_w - (w_q_sparse.astype(mx.float16) * gamma_sparse))).item()\
+\
+        p_stat = "PASS" if pert_diff < self.threshold else "FAIL"\
+        s_stat = "PASS" if sparse_diff < self.threshold else "FAIL"\
+\
+        logger.info(f"    | 1% Drift Shift: \{pert_diff:.5f\} [\{p_stat\}]")\
+        logger.info(f"    | 5% Sparsification Shift: \{sparse_diff:.5f\} [\{s_stat\}]")\
+\
+        if p_stat == "FAIL" or s_stat == "FAIL":\
+            global_status = False\
+\
+    if global_status:\
+        logger.info("[+] SYSTEM CAPABILITY: Multi-Dimensional Rigidity Asserted. Sovereignty holds.")\
+        return True\
+    logger.error("[-] ROOT NODE FAILURE: Dimension collapse detected across execution boundary.")\
+    return False\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 EOF\
+\pard\pardeftab720\sa321\partightenfactor0
+
+\f1\b\fs48 \cf0 --- src/bitnet_mlx/converter.py ---\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b0\fs24 \cf0 cat << 'EOF' > src/bitnet_mlx/converter.py\
+import mlx.core as mx\
+import os, time, logging, shutil\
+from pathlib import Path\
+from huggingface_hub import snapshot_download\
+from .bitnet_layers import compute_channel_ternary\
+from .telemetry import StructuralEvaluator, HighDensityLogger\
+from .audit import EmulationAuditor\
+logger = logging.getLogger("BitNet.Compiler")\
+class BitNetCompiler:\
+def 
+\f1\b init
+\f0\b0 (self, adaptive_sparsify_threshold: float = 0.05):\
+self.exclude_layers = \{"embed", "lm_head", "gate"\}\
+self.sparsify_threshold = adaptive_sparsify_threshold\
+self.variance_floor = 0.85\
+self.hd_logger = HighDensityLogger()\
+\pard\pardeftab720\partightenfactor0
+\cf0 def compile_manifold(self, model_id_or_path: str, output_dir: str):\
+    if not EmulationAuditor().execute_audit():\
+        logger.error("[-] Emulation verification failed. Executing operational halt.")\
+        return\
+\
+    src_path = Path(model_id_or_path) if os.path.exists(model_id_or_path) else Path(snapshot_download(repo_id=model_id_or_path, local_dir_use_symlinks=False))\
+    dest_path = Path(output_dir)\
+    os.makedirs(dest_path, exist_ok=True)\
+    \
+    for file in src_path.glob("*"):\
+        if file.suffix in [".json", ".model", ".txt"] and "safetensors.index" not in file.name:\
+            shutil.copy(file, dest_path / file.name)\
+\
+    for shard in list(src_path.glob("*.safetensors")):\
+        logger.info(f"[*] Ingesting continuous tensors: \{shard.name\}")\
+        weights = mx.load(str(shard))\
+        ternary_dict = \{\}\
+        \
+        for name, tensor in weights.items():\
+            if "weight" in name and len(tensor.shape) == 2 and not any(k in name.lower() for k in self.exclude_layers):\
+                base_name = name.rsplit('.weight', 1)[0]\
+                adaptive_flag = False\
+                \
+                cutoff = mx.std(tensor) * self.sparsify_threshold\
+                optimized_tensor = mx.where(mx.abs(tensor) < cutoff, 0.0, tensor)\
+                w_q, gamma = compute_channel_ternary(optimized_tensor)\
+                fid = StructuralEvaluator.evaluate_variance_fidelity(tensor, w_q, gamma)\
+\
+                if fid < self.variance_floor:\
+                    w_q, gamma = compute_channel_ternary(tensor)\
+                    fid = StructuralEvaluator.evaluate_variance_fidelity(tensor, w_q, gamma)\
+                    adaptive_flag = True\
+                    \
+                mx.eval(w_q, gamma)\
+                \
+                ratio = float(tensor.size * 2) / float((w_q.size * 1) + (gamma.size * 2))\
+                weightings = StructuralEvaluator.compute_parameter_weighting(w_q)\
+                self.hd_logger.append_layer_telemetry(name, tensor.shape, fid, ratio, weightings, adaptive_flag)\
+                \
+                ternary_dict[f"\{base_name\}.w_q"] = w_q\
+                ternary_dict[f"\{base_name\}.gamma"] = gamma\
+            else:\
+                ternary_dict[name] = tensor\
+                \
+        mx.save_safetensors(str(dest_path / shard.name), ternary_dict)\
+\
+    self.hd_logger.commit_to_disk()\
+    logger.info("[+] Target sequence compiled. Telemetry locked.")\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 EOF\
+\pard\pardeftab720\sa321\partightenfactor0
+
+\f1\b\fs48 \cf0 --- src/bitnet_mlx/cli.py ---\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b0\fs24 \cf0 cat << 'EOF' > src/bitnet_mlx/cli.py\
+import argparse\
+import logging\
+import sys\
+import pandas as pd\
+from pathlib import Path\
+from .converter import BitNetCompiler\
+from .audit import EmulationAuditor\
+from .engine import InjectionEngine\
+logging.basicConfig(level=logging.INFO, format='%(message)s')\
+logger = logging.getLogger("BitNet.CLI")\
+def run_converter():\
+parser = argparse.ArgumentParser()\
+parser.add_argument("--input", required=True)\
+parser.add_argument("--output", required=True)\
+parser.add_argument("--adaptive-sparsify", type=float, default=0.05)\
+args = parser.parse_args()\
+BitNetCompiler(adaptive_sparsify_threshold=args.adaptive_sparsify).compile_manifold(args.input, args.output)\
+def run_emulation_audit():\
+if not EmulationAuditor().execute_audit(): sys.exit(1)\
+def run_c2v_report():\
+log_file = Path("logs/c2v_telemetry.parquet")\
+if not log_file.exists(): return logger.error("[-] C2V Telemetry missing.")\
+df = pd.read_parquet(log_file)\
+\pard\pardeftab720\partightenfactor0
+\cf0 global_params = df['total_params'].sum()\
+global_zeros = df['zeros'].sum()\
+global_pos = df['pos_ones'].sum()\
+global_neg = df['neg_ones'].sum()\
+\
+logger.info("\\n[*] --- SYSTEM CAPABILITY: GLOBAL PARAMETER WEIGHTING REPORT ---")\
+logger.info(f"Target Nodes Processed: \{len(df)\}")\
+logger.info(f"Total Operational Parameters: \{global_params:,\}")\
+logger.info(f"Global Sparsity Ratio (0): \{(global_zeros / global_params) * 100:.2f\}%")\
+logger.info(f"Global Positive State (+1): \{(global_pos / global_params) * 100:.2f\}%")\
+logger.info(f"Global Negative State (-1): \{(global_neg / global_params) * 100:.2f\}%")\
+logger.info(f"Median Space Compression: \{df['compression_ratio'].median():.2f\}x")\
+logger.info(f"Variance Preservation Index: \{df['variance_fidelity'].mean()*100:.2f\}%")\
+logger.info("[*] ------------------------------------------------------------")\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 def run_inference_stream():\
+parser = argparse.ArgumentParser()\
+parser.add_argument("--model", required=True)\
+parser.add_argument("--prompt", required=True)\
+parser.add_argument("--max-tokens", type=int, default=512)\
+args = parser.parse_args()\
+InjectionEngine.execute_streaming_inference(args.model, args.prompt, args.max_tokens)\
+EOF\
+\pard\pardeftab720\sa321\partightenfactor0
+
+\f1\b\fs48 \cf0 --- tests/test_core.py ---\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b0\fs24 \cf0 cat << 'EOF' > tests/test_core.py\
+import mlx.core as mx\
+from bitnet_mlx.bitnet_layers import compute_channel_ternary\
+def test_ternary_bounding():\
+w = mx.random.normal((512, 512))\
+w_q, gamma = compute_channel_ternary(w)\
+mx.eval(w_q, gamma)\
+\pard\pardeftab720\partightenfactor0
+\cf0 unique_vals = mx.unique(w_q).tolist()\
+for val in unique_vals:\
+    assert val in [-1, 0, 1], f"Topological breach: \{val\} outside ternary boundary."\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 EOF\
+\pard\pardeftab720\sa321\partightenfactor0
+
+\f1\b\fs48 \cf0 --- Commit and Sync ---\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b0\fs24 \cf0 git add .\
+git commit -m "build: SDK v8.0.0 Omni-Core Pipeline (OSS CI/CD, Multi-Dim Emulation, Global C2V Metrics)"\
+echo "[*] Synchronizing execution manifest to remote logic nodes..."\
+git push -u origin main --force\
+\pard\pardeftab720\sa321\partightenfactor0
+
+\f1\b\fs48 \cf0 ==============================================================================\
+03. BINARY MANIFOLD HARD FORK (b1.0)\
+==============================================================================\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b0\fs24 \cf0 git checkout -b feature/binary-manifolds main 2>/dev/null || git checkout feature/binary-manifolds\
+cat << 'EOF' > src/bitnet_mlx/binary_layers.py\
+import mlx.core as mx\
+import mlx.nn as nn\
+@mx.compile\
+def compute_binary_projection(w: mx.array) -> tuple:\
+eps = 1e-5\
+alpha = mx.mean(mx.abs(w), axis=-1, keepdims=True)\
+return mx.sign(w + eps).astype(mx.int8), alpha\
+EOF\
+git add .\
+git commit -m "research: Isolate strict absolute binary kernel"\
+git push -u origin feature/binary-manifolds --force\
+git checkout main\
+echo "\\n[+] Omni-Core SDK Deployed. Total execution streaming capability bound to terminal."\
+}
