@@ -1,23 +1,27 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitnet-mlx"
-version = "1.0.0"
-description = "Enterprise-Grade BitNet b1.58 Ternary/Binary Quantization Engine for Apple Silicon"
+version = "6.0.0"
+description = "Omni-Sovereign SDK: a8w1.58 Execution Matrix for Apple Silicon"
 authors = [{name = "JuniorCloud LLC"}]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "mlx>=0.10.0",
-    "mlx-lm>=0.11.0",
+    "mlx-lm>=0.12.0",
     "numpy>=1.24.0",
-    "huggingface_hub>=0.23.0"
+    "huggingface_hub>=0.23.0",
+    "pyarrow>=12.0.0",
+    "pandas>=2.0.0"
 ]
 
 [project.scripts]
 bitnet-convert = "bitnet_mlx.cli:run_converter"
+bitnet-audit = "bitnet_mlx.cli:run_emulation_audit"
+bitnet-chat = "bitnet_mlx.cli:run_inference_stream"
 
 [tool.setuptools.packages.find]
 where = ["src"]
