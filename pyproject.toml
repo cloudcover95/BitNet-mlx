@@ -1,24 +1,20 @@
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
-
 [project]
 name = "bitnet-mlx"
-version = "23.0.0"
-description = "High-performance MLX-native ternary (1.58-bit) and binary quantization for Apple Silicon."
+version = "24.0.0"
+description = "High-performance MLX-native ternary (1.58-bit) quantization for Apple Silicon — LLMs + VLMs"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
-keywords = ["mlx", "bitnet", "quantization", "apple-silicon", "llm", "1.58-bit", "ternary"]
+keywords = ["mlx", "bitnet", "quantization", "apple-silicon", "vlm", "1.58-bit", "ternary"]
 authors = [{name = "JuniorCloud LLC", email = "open-source@juniorcloud.com"}]
-
 [project.optional-dependencies]
-dev = ["pytest>=7.0.0", "build>=0.10.0", "twine>=4.0.2", "black", "isort"]
-
+dev = ["pytest>=7.0.0", "build>=0.10.0", "black", "isort"]
 [project.scripts]
 bitnet-convert = "bitnet_mlx.cli:run_converter"
 bitnet-eval = "bitnet_mlx.cli:run_emulation_audit"
 bitnet-chat = "bitnet_mlx.cli:run_inference_stream"
-
 [tool.setuptools.packages.find]
 where = ["src"]

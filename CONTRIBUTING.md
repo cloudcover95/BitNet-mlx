@@ -1,5 +1,6 @@
-# Contributing
+Contributing to BitNet-MLX
 
-- Keep all math O(N). Singular Value Decomposition (SVD) pipelines are strictly rejected.
-- Apple Silicon / MLX first.
-- Always include testing manifolds.
+All operations must remain O(N) — SVD is forbidden
+Apple Silicon + AMX first
+New layers must support multimodal (VLM) use cases
+Include tests with every PR
