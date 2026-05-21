@@ -1,15 +1,21 @@
 .PHONY: install test lint eval clean build
+
 install:
-pip install --upgrade pip
-pip install -e .[dev]
+	pip install --upgrade pip
+	pip install -e .[dev]
+
 test:
-pytest tests/ -v
+	pytest tests/ -v
+
 lint:
-black src/ tests/
+	black src/ tests/
+
 eval:
-bitnet-eval
+	bitnet-eval
+
 clean:
-rm -rf build/ dist/ *.egg-info/ .pytest_cache/
-find . -name pycache -exec rm -rf {} +
+	rm -rf build/ dist/ *.egg-info/ .pytest_cache/ logs/*.parquet
+	find . -name __pycache__ -exec rm -rf {} +
+
 build: clean
-python -m build
+	python -m build

@@ -1,6 +1,5 @@
-Contributing to BitNet-MLX
+# Contributing
 
-All operations must remain O(N) — SVD is forbidden
-Apple Silicon + AMX first
-New layers must support multimodal (VLM) use cases
-Include tests with every PR
+- Keep all operations within O(N) complexity constraints. SVD is strictly forbidden.
+- Optimizations must prioritize Apple Silicon architectures.
+- Telemetry modules must save down directly to high-density .parquet matrices.
