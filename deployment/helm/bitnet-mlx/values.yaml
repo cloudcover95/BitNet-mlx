@@ -2,7 +2,7 @@ replicaCount: 3
 image:
   repository: juniorcloud/bitnet-mlx
   pullPolicy: IfNotPresent
-  tag: "v16.0.0"
+  tag: "v20.0.0"
 service:
   type: ClusterIP
   port: 8000

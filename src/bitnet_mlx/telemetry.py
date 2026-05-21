@@ -31,13 +31,12 @@ class StructuralEvaluator:
 @staticmethod
 def compute_parameter_weighting(w_q: mx.array, w_outliers: mx.array) -> dict:
 total = w_q.size
-outlier_count = mx.sum(w_outliers != 0.0).item()
 return {
 "total_params": total,
 "zeros": mx.sum(mx.round(w_q) == 0).item(),
 "pos_ones": mx.sum(mx.round(w_q) == 1).item(),
 "neg_ones": mx.sum(mx.round(w_q) == -1).item(),
-"outliers": outlier_count
+"outliers": mx.sum(w_outliers != 0.0).item()
 }
 
 class HighDensityLogger:

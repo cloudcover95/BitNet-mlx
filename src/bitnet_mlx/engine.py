@@ -23,12 +23,12 @@ return model
 
 @staticmethod
 def execute_streaming_inference(model_path: str, prompt: str, max_tokens: int = 512, bits: int = 8):
-    logger.info(f"[*] Booting Aether Sovereign Engine: {model_path} [Precision: a{bits}w1.58 + Outliers]")
+    logger.info(f"[*] Booting Aegis-Omni Sovereign Engine: {model_path}")
     model, tokenizer = load(model_path)
     model = InjectionEngine.patch_model_topology(model, activation_bits=bits)
     model.load_weights(f"{model_path}/model.safetensors", strict=False)
     
-    logger.info("[*] Hybrid Outlier matrices bound. Executing token stream:\n")
+    logger.info("[*] AMX topologies fused. Commencing execution array:\n")
     for response in stream_generate(model, tokenizer, prompt=prompt, max_tokens=max_tokens):
         print(response.text, end="", flush=True)
     print("\n\n[*] Stream cycle complete.")

@@ -1,12 +1,15 @@
 import argparse
 import logging
 import sys
+import json
+import uvicorn
 import pandas as pd
 from pathlib import Path
 from .converter import BitNetCompiler
 from .audit import EmulationAuditor
 from .engine import InjectionEngine
 from .qat import SovereignTrainer
+from .swarm import app
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger("BitNet.CLI")
@@ -25,22 +28,40 @@ parser.add_argument("--export-json", action="store_true")
 args = parser.parse_args()
 if not EmulationAuditor().execute_audit(export_json=args.export_json): sys.exit(1)
 
+def run_metadata_inspector():
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", required=True)
+args = parser.parse_args()
+model_path = Path(args.model)
+for shard in model_path.glob(".safetensors"):
+with open(shard, 'rb') as f:
+header_len = int.from_bytes(f.read(8), 'little')
+header = json.loads(f.read(header_len).decode('utf-8'))
+meta = header.get("metadata", {})
+if "juniorcloud-bitnet-v20-aegis-omni" in meta.get("format", ""):
+tp = int(meta.get("c2v_total_params", 1))
+logger.info(f"\n[] --- SYSTEM CAPABILITY: AEGIS-OMNI SOVEREIGN MANIFEST ---")
+logger.info(f"Topological Shard: {shard.name}")
+logger.info(f"Zero-State Ratio: {(int(meta.get('c2v_zeros', 0)) / tp) * 100:.2f}%")
+logger.info(f"FP16 Outliers: {(int(meta.get('c2v_outliers', 0)) / tp) * 100:.4f}%")
+return
+logger.error("[-] Payload missing. Not an Aegis-Omni array.")
+
 def run_c2v_report():
 log_file = Path("logs/c2v_telemetry.parquet")
-if not log_file.exists(): return logger.error("[-] Root Node Failure: Parquet stream disconnected.")
+if not log_file.exists(): return logger.error("[-] Root Node Failure: Parquet missing.")
 df = pd.read_parquet(log_file)
+logger.info(f"\n[*] --- SYSTEM CAPABILITY: C2V PARAMETER MANIFEST ---")
+logger.info(f"Global O(N) Variance Preservation: {df['variance_fidelity'].mean()100:.2f}%")
+logger.info("[] ------------------------------------------------------------")
 
-global_params = df['total_params'].sum()
-global_zeros = df['zeros'].sum()
-global_outliers = df['outliers'].sum()
+def run_swarm_node():
+parser = argparse.ArgumentParser()
+parser.add_argument("--port", type=int, default=9000)
+args = parser.parse_args()
+logger.info(f"[*] Booting Swarm RPC Node on port {args.port}...")
+uvicorn.run(app, host="0.0.0.0", port=args.port, log_level="info")
 
-logger.info("\n[*] --- SYSTEM CAPABILITY: HYBRID PARAMETRIC WEIGHTING ---")
-logger.info(f"Topologies Processed: {len(df)}")
-logger.info(f"Total Logic Gates: {global_params:,}")
-logger.info(f"Ternary Zero-State Ratio: {(global_zeros / global_params) * 100:.2f}%")
-logger.info(f"FP16 Outlier Mapping: {(global_outliers / global_params) * 100:.4f}%")
-logger.info(f"O(N) Variance Preservation: {df['variance_fidelity'].mean()*100:.2f}%")
-logger.info("[*] ------------------------------------------------------------")
 def run_inference_stream():
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", required=True)

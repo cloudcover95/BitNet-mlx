@@ -1,4 +1,4 @@
-.PHONY: install test audit clean build publish telemetry deploy train
+.PHONY: install test audit clean build publish telemetry deploy train conda swarm
 
 install:
 	pip install --upgrade pip
@@ -19,6 +19,9 @@ deploy:
 train:
 	bitnet-qat --model ./assets/ternary_phi3 --dataset ./data/finetune.jsonl --epochs 1
 
+swarm:
+	bitnet-swarm --port 9000
+
 clean:
 	rm -rf build/ dist/ *.egg-info/ .pytest_cache/
 	find . -type d -name __pycache__ -exec rm -rf {} +
@@ -28,3 +31,6 @@ build: clean
 
 publish: build
 	twine upload dist/*
+
+conda:
+	conda build conda/
