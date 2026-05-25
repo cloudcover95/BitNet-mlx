@@ -13,8 +13,10 @@ class GrokEvaluator:
             p = mx.random.normal((dim, dim), dtype=mx.float16) * 0.05
             wq, g, wo = compute_absmean_ternary_ste(p)
             recon = (wq * g) + wo
-            mae = mx.mean(mx.abs(p - recon)).item()
-            var_ret = min(mx.var(recon).item() / (mx.var(p).item() + 1e-9), 1.0)
+            
+            # Cast to float32 before accumulation to prevent 'inf' threshold breach
+            mae = mx.mean(mx.abs(p.astype(mx.float32) - recon.astype(mx.float32))).item()
+            var_ret = min(mx.var(recon.astype(mx.float32)).item() / (mx.var(p.astype(mx.float32)).item() + 1e-9), 1.0)
             
             zeros = mx.sum(wq == 0).item()
             results.append({

@@ -10,7 +10,7 @@ class DynamicBitLinear(nn.Module):
         
     def __call__(self, x: mx.array) -> mx.array:
         w_q, g, w_o = compute_absmean_ternary_ste(self.weight)
-        q_max = 7.0 # 4-bit activation routing to prevent thermal saturation
+        q_max = 7.0 
         
         scale_x = mx.max(mx.abs(x), axis=-1, keepdims=True) / q_max
         x_q = mx.clip(mx.round(x / (scale_x + 1e-5)), -q_max, q_max)

@@ -1,9 +1,11 @@
 import mlx.nn as nn
 import mlx.core as mx
-from mlx_lm.utils import load
+from mlx_lm.utils import load, save_weights
 from ..layers.bitnet import DynamicBitLinear
 from pathlib import Path
 import json
+import shutil
+import glob
 
 class TopologySurgeon:
     @staticmethod
@@ -34,16 +36,22 @@ class TopologySurgeon:
         out_path.mkdir(parents=True, exist_ok=True)
         
         print(f"[*] Synchronizing safetensors to {output_dir}")
-        weights = dict(quantized_model.parameters())
-        mx.save_safetensors(str(out_path / "model.safetensors"), weights)
+        save_weights(str(out_path), quantized_model.parameters())
         
         # Mirror original configuration mapping
-        with open(out_path / "config.json", "w") as f:
-            json.dump({"architectures": ["BitNetForCausalLM"], "quantization": "1.58-bit"}, f)
-            
         try:
-            tokenizer.save_pretrained(str(out_path))
+            from huggingface_hub import snapshot_download
+            local_dir = snapshot_download(repo_id, allow_patterns=["*.json", "*.model", "tokenizer*"])
+            for file in glob.glob(f"{local_dir}/*"):
+                shutil.copy(file, out_path)
+            
+            with open(out_path / "config.json", "r+") as f:
+                config = json.load(f)
+                config["quantization"] = {"group_size": 0, "bits": 2}
+                f.seek(0)
+                json.dump(config, f, indent=2)
+                f.truncate()
         except Exception as e:
-            print(f"[-] Tokenizer mirror bypass: {e}")
+            print(f"[-] Config override bypassed. Proceeding with raw weights. {e}")
             
         print("[+] Sovereign quantization sequence complete.")

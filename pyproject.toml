@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitnet_mlx"
-version = "39.0.0"
-description = "Google-Grade MLX ternary (1.58-bit) SDK and Topology Converter."
+version = "40.0.0"
+description = "Enterprise-Grade MLX ternary (1.58-bit) SDK and Topology Converter."
 readme = "README.md"
 requires-python = ">=3.9"
 keywords = ["mlx", "bitnet", "1.58-bit", "apple-silicon", "quantization"]

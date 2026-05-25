@@ -7,7 +7,6 @@ class InjectionEngine:
         print(f"[*] Booting Sovereign Logic Engine: {model_path}")
         model, tokenizer = load(model_path)
         
-        # Inject ternary routing at runtime if weights are locally stored
         model = TopologySurgeon.transmute(model)
         
         print(f"[*] Thermal payload secure. Executing streaming logic...\n")
