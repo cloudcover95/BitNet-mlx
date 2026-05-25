@@ -1,23 +1,19 @@
-# BitNet-MLX: Sovereign MCP Vanguard
+# BitNet-MLX: Sovereign Converter Engine
 
-**Production-grade MLX-native ternary (1.58-bit) SDK and MCP Server for Apple Silicon.**
+**Production-grade MLX-native ternary (1.58-bit) SDK for Apple Silicon.**
 
-## Model Sovereignty via MCP
-BitNet-MLX executes as an autonomous edge-native MCP server. AI code assistants (Cursor, Claude Desktop) can locally query real-time value compute capabilities (UMA RAM, thermal load) and execute parametric data audits directly on your edge hardware.
+## Architecture Capabilities
+- **Topological Converter:** Recursively swaps FP16 models into `DynamicBitLinear` 1.58-bit state boundaries.
+- **Venv Enforced Pipeline:** Guarantees isolation from macOS system-level Python constraints.
+- **Zero-SVD Assurance:** Operations remain O(N), bound natively to AMX coprocessor grids.
 
-### MCP Gateway Configuration
-```json
-{
-  "mcpServers": {
-    "bitnet-mlx-sovereign": {
-      "command": "bitnet-mlx",
-      "args": ["mcp"]
-    }
-  }
-}
-System Capabilities
-Zero-SVD Operations: Strict O(N) execution mapped natively to AMX registers.
+## Execution Routing
+```bash
+# Evaluate Parametric Weighting
+bitnet-mlx eval
 
-Dynamic Kinematic Routing: Automatic degradation based on 48V power limits or system thermal constraints.
+# Convert HuggingFace Topologies
+bitnet-mlx convert --repo mlx-community/Phi-3-mini-4k-instruct --output ./models/phi-3-bitnet
 
-Parametric Weighting: Grok data inference tracking saved immutably to .parquet format for agent retrieval.
+# Autonomous Edge Execution
+bitnet-mlx chat --model ./models/phi-3-bitnet --prompt "Define topological sparsity."

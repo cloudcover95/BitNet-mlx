@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitnet_mlx"
-version = "35.0.0"
-description = "Production-grade MLX ternary (1.58-bit) SDK and MCP Server for Apple Silicon Edge Sovereignty."
+version = "36.0.0"
+description = "Production-grade MLX ternary (1.58-bit) SDK and Model Converter for Apple Silicon."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 keywords = ["mlx", "bitnet", "1.58-bit", "quantization", "apple-silicon", "mcp", "sovereign-ai"]
 authors = [{name = "JuniorCloud LLC"}]
 

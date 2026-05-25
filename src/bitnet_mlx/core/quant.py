@@ -2,10 +2,7 @@ import mlx.core as mx
 
 @mx.compile
 def compute_absmean_ternary_ste(w: mx.array, eps: float = 1e-5):
-    """
-    O(N) AbsMean Ternary Quantization with Straight-Through Estimator.
-    SVD matrix operations strictly excluded. Bounds mapped to {-1, 0, 1}.
-    """
+    """O(N) AbsMean Ternary Quantization with Straight-Through Estimator. Zero SVD."""
     outlier_cutoff = 3.0 * mx.std(w)
     outlier_mask = mx.abs(w) > outlier_cutoff
     w_core = mx.where(outlier_mask, 0.0, w)
