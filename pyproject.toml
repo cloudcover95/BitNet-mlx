@@ -4,15 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitnet_mlx"
-version = "29.0.0"
-description = "High-performance MLX-native ternary (1.58-bit) SDK for LLMs & VLMs."
+version = "35.0.0"
+description = "Production-grade MLX ternary (1.58-bit) SDK and MCP Server for Apple Silicon Edge Sovereignty."
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT"}
-authors = [{name = "JuniorCloud LLC", email = "open-source@juniorcloud.com"}]
+keywords = ["mlx", "bitnet", "1.58-bit", "quantization", "apple-silicon", "mcp", "sovereign-ai"]
+authors = [{name = "JuniorCloud LLC"}]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0.0", "black", "isort", "pyarrow>=12.0.0", "pandas>=2.0.0"]
+dev = [
+    "pytest>=7.0.0", 
+    "black", 
+    "pyarrow>=12.0.0", 
+    "pandas>=2.0.0", 
+    "mlx-lm>=0.12.0",
+    "mcp>=0.1.0",
+    "psutil>=5.9.0"
+]
 
 [project.scripts]
-bitnet-mlx = "bitnet_mlx.cli:main"
+bitnet-mlx = "bitnet_mlx.cli.main:main"
