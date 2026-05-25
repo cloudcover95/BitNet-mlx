@@ -4,21 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitnet_mlx"
-version = "36.0.0"
-description = "Production-grade MLX ternary (1.58-bit) SDK and Model Converter for Apple Silicon."
+version = "39.0.0"
+description = "Google-Grade MLX ternary (1.58-bit) SDK and Topology Converter."
 readme = "README.md"
 requires-python = ">=3.9"
-keywords = ["mlx", "bitnet", "1.58-bit", "quantization", "apple-silicon", "mcp", "sovereign-ai"]
+keywords = ["mlx", "bitnet", "1.58-bit", "apple-silicon", "quantization"]
 authors = [{name = "JuniorCloud LLC"}]
-
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0", 
-    "black", 
-    "pyarrow>=12.0.0", 
-    "pandas>=2.0.0", 
+dependencies = [
+    "mlx>=0.14.0",
     "mlx-lm>=0.12.0",
-    "mcp>=0.1.0",
+    "pyarrow>=12.0.0",
+    "pandas>=2.0.0",
     "psutil>=5.9.0"
 ]
 

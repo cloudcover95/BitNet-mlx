@@ -1,13 +1,6 @@
 import mlx.core as mx
 import mlx.nn as nn
-import psutil
 from ..core.quant import compute_absmean_ternary_ste
-
-class EdgeSubstrate:
-    @staticmethod
-    def optimal_activation_routing() -> int:
-        """Thermal-kinematic routing: Shifts precision based on UMA 48V thermal constraints."""
-        return 4 if psutil.cpu_percent(interval=0.1) > 85.0 else 8
 
 class DynamicBitLinear(nn.Module):
     def __init__(self, in_d: int, out_d: int, bias: bool = False):
@@ -17,8 +10,7 @@ class DynamicBitLinear(nn.Module):
         
     def __call__(self, x: mx.array) -> mx.array:
         w_q, g, w_o = compute_absmean_ternary_ste(self.weight)
-        bits = EdgeSubstrate.optimal_activation_routing()
-        q_max = (2 ** (bits - 1)) - 1.0
+        q_max = 7.0 # 4-bit activation routing to prevent thermal saturation
         
         scale_x = mx.max(mx.abs(x), axis=-1, keepdims=True) / q_max
         x_q = mx.clip(mx.round(x / (scale_x + 1e-5)), -q_max, q_max)

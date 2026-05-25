@@ -1,6 +1,5 @@
-import mlx.core as mx
 from mlx_lm import generate, load
-from .converter import SovereignConverter
+from .converter import TopologySurgeon
 
 class InjectionEngine:
     @staticmethod
@@ -8,8 +7,8 @@ class InjectionEngine:
         print(f"[*] Booting Sovereign Logic Engine: {model_path}")
         model, tokenizer = load(model_path)
         
-        # Inject ternary routing at runtime if weights are already pre-processed
-        model = SovereignConverter.map_topology(model)
+        # Inject ternary routing at runtime if weights are locally stored
+        model = TopologySurgeon.transmute(model)
         
         print(f"[*] Thermal payload secure. Executing streaming logic...\n")
         response = generate(model, tokenizer, prompt=prompt, max_tokens=max_tokens, verbose=True)

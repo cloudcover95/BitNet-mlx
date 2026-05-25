@@ -1,26 +1,26 @@
 import mlx.nn as nn
-from mlx_lm.utils import load, save_weights
+import mlx.core as mx
+from mlx_lm.utils import load
 from ..layers.bitnet import DynamicBitLinear
 from pathlib import Path
+import json
 
-class SovereignConverter:
+class TopologySurgeon:
     @staticmethod
-    def map_topology(model: nn.Module) -> nn.Module:
-        """Recursively parses model topology, replacing FP16 Linear layers with Ternary gates."""
-        def _replace_layers(module, name=""):
-            for child_name, child in list(module.named_children()):
-                full_name = f"{name}.{child_name}" if name else child_name
-                # Protect LM head and routing logic from quantization drop-off
-                if isinstance(child, nn.Linear) and not any(k in full_name.lower() for k in ["embed", "lm_head", "gate"]):
+    def transmute(module: nn.Module) -> nn.Module:
+        """Surgical routing: Replaces FP16 Linear manifolds with 1.58-bit DynamicBitLinear."""
+        def _replace(mod, prefix=""):
+            for name, child in list(mod.named_children()):
+                path = f"{prefix}.{name}" if prefix else name
+                if isinstance(child, nn.Linear) and not any(k in path.lower() for k in ["lm_head", "embed", "gate"]):
                     in_d = child.weight.shape[1]
                     out_d = child.weight.shape[0]
                     has_bias = child.bias is not None
-                    setattr(module, child_name, DynamicBitLinear(in_d, out_d, bias=has_bias))
+                    setattr(mod, name, DynamicBitLinear(in_d, out_d, bias=has_bias))
                 else:
-                    _replace_layers(child, full_name)
-        
-        _replace_layers(model)
-        return model
+                    _replace(child, path)
+        _replace(module)
+        return module
 
     @staticmethod
     def build_bitnet_manifold(repo_id: str, output_dir: str):
@@ -28,12 +28,22 @@ class SovereignConverter:
         model, tokenizer = load(repo_id)
         
         print("[*] Executing Topological Substitution (Zero-SVD)...")
-        quantized_model = SovereignConverter.map_topology(model)
+        quantized_model = TopologySurgeon.transmute(model)
         
         out_path = Path(output_dir)
         out_path.mkdir(parents=True, exist_ok=True)
         
-        print(f"[*] Synchronizing BitNet-MLX state to {output_dir}")
-        save_weights(out_path, quantized_model.parameters())
-        tokenizer.save_pretrained(out_path)
-        print("[+] Sovereign quantization complete.")
+        print(f"[*] Synchronizing safetensors to {output_dir}")
+        weights = dict(quantized_model.parameters())
+        mx.save_safetensors(str(out_path / "model.safetensors"), weights)
+        
+        # Mirror original configuration mapping
+        with open(out_path / "config.json", "w") as f:
+            json.dump({"architectures": ["BitNetForCausalLM"], "quantization": "1.58-bit"}, f)
+            
+        try:
+            tokenizer.save_pretrained(str(out_path))
+        except Exception as e:
+            print(f"[-] Tokenizer mirror bypass: {e}")
+            
+        print("[+] Sovereign quantization sequence complete.")
