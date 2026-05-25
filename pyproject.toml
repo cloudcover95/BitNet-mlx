@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitnet_mlx"
-version = "40.0.0"
-description = "Enterprise-Grade MLX ternary (1.58-bit) SDK and Topology Converter."
+version = "42.0.0"
+description = "Enterprise-Grade MLX ternary (1.58-bit) SDK mapped with JuniorCloud TDA."
 readme = "README.md"
 requires-python = ">=3.9"
-keywords = ["mlx", "bitnet", "1.58-bit", "apple-silicon", "quantization"]
+keywords = ["mlx", "bitnet", "1.58-bit", "apple-silicon", "tda", "quantization"]
 authors = [{name = "JuniorCloud LLC"}]
 dependencies = [
     "mlx>=0.14.0",

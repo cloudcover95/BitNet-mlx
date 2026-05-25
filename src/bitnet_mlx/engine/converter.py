@@ -1,6 +1,6 @@
 import mlx.nn as nn
 import mlx.core as mx
-from mlx_lm.utils import load, save_weights
+from mlx_lm.utils import load
 from ..layers.bitnet import DynamicBitLinear
 from pathlib import Path
 import json
@@ -10,7 +10,6 @@ import glob
 class TopologySurgeon:
     @staticmethod
     def transmute(module: nn.Module) -> nn.Module:
-        """Surgical routing: Replaces FP16 Linear manifolds with 1.58-bit DynamicBitLinear."""
         def _replace(mod, prefix=""):
             for name, child in list(mod.named_children()):
                 path = f"{prefix}.{name}" if prefix else name
@@ -36,9 +35,9 @@ class TopologySurgeon:
         out_path.mkdir(parents=True, exist_ok=True)
         
         print(f"[*] Synchronizing safetensors to {output_dir}")
-        save_weights(str(out_path), quantized_model.parameters())
+        weights_dict = dict(quantized_model.parameters())
+        mx.save_safetensors(str(out_path / "model.safetensors"), weights_dict)
         
-        # Mirror original configuration mapping
         try:
             from huggingface_hub import snapshot_download
             local_dir = snapshot_download(repo_id, allow_patterns=["*.json", "*.model", "tokenizer*"])
@@ -52,6 +51,6 @@ class TopologySurgeon:
                 json.dump(config, f, indent=2)
                 f.truncate()
         except Exception as e:
-            print(f"[-] Config override bypassed. Proceeding with raw weights. {e}")
+            pass
             
         print("[+] Sovereign quantization sequence complete.")

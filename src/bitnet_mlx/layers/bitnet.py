@@ -9,12 +9,12 @@ class DynamicBitLinear(nn.Module):
         self.bias = mx.zeros((out_d,), dtype=mx.float16) if bias else None
         
     def __call__(self, x: mx.array) -> mx.array:
-        w_q, g, w_o = compute_absmean_ternary_ste(self.weight)
+        w_q_ste, g_tda, _ = compute_absmean_ternary_ste(self.weight)
         q_max = 7.0 
         
         scale_x = mx.max(mx.abs(x), axis=-1, keepdims=True) / q_max
         x_q = mx.clip(mx.round(x / (scale_x + 1e-5)), -q_max, q_max)
         x_q_ste = x + mx.stop_gradient(x_q - x)
 
-        y = mx.matmul(x_q_ste, w_q.T) * (g.T * scale_x) + mx.matmul(x, w_o.T)
+        y = mx.matmul(x_q_ste, w_q_ste.T) + mx.matmul(x, (self.weight - w_q_ste).T)
         return y + self.bias if self.bias is not None else y
