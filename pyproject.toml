@@ -1,11 +1,12 @@
+# pyproject.toml
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitnet_mlx"
-version = "55.0.0"
-description = "Production-grade MLX-native 1.58-bit ternary SDK. Omni-hardware scaling, TDA, and Swarm RPC."
+version = "58.0.0"
+description = "Production-grade MLX-native 1.58-bit ternary SDK. Infinite Swarm scaling, QAT LoRA, and TDA."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}

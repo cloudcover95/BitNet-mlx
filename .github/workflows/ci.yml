@@ -1,21 +1,22 @@
+# .github/workflows/ci.yml
 name: Omni-Sovereign Pipeline
 on: [push, pull_request]
 jobs:
-validate:
-runs-on: macos-latest
-steps:
-- uses: actions/checkout@v4
-- name: Set up Python
-uses: actions/setup-python@v5
-with:
-python-version: "3.11"
-- name: Install dependencies
-run: |
-python -m pip install --upgrade pip
-pip install -e .[dev]
-- name: Linter & Typing
-run: |
-ruff check src/
-mypy src/
-- name: TDA Math Tests
-run: pytest tests/
+  validate:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+      - name: Static Analysis
+        run: |
+          ruff check src/
+          mypy src/
+      - name: TDA Math Tests
+        run: pytest tests/
