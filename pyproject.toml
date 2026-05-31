@@ -1,22 +1,44 @@
+# pyproject.toml
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitnet_mlx"
-version = "42.0.0"
-description = "Enterprise-Grade MLX ternary (1.58-bit) SDK mapped with JuniorCloud TDA."
+version = "54.0.0"
+description = "Production-grade MLX-native 1.58-bit ternary SDK. Omni-hardware scaling powered by Spectral TDA."
 readme = "README.md"
-requires-python = ">=3.9"
-keywords = ["mlx", "bitnet", "1.58-bit", "apple-silicon", "tda", "quantization"]
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+keywords = ["mlx", "bitnet", "1.58-bit", "tda", "apple-silicon", "edge-ai", "juniorcloud", "fastapi"]
 authors = [{name = "JuniorCloud LLC"}]
 dependencies = [
-    "mlx>=0.14.0",
-    "mlx-lm>=0.12.0",
-    "pyarrow>=12.0.0",
+    "mlx>=0.16.0",
+    "mlx-lm>=0.16.0",
+    "rich>=13.0.0",
+    "typer>=0.9.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "pyarrow>=14.0.0",
     "pandas>=2.0.0",
-    "psutil>=5.9.0"
+    "psutil>=5.9.0",
+    "huggingface_hub>=0.20.0",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.23.0",
+    "sse-starlette>=1.8.0",
+    "pyzmq>=25.0.0"
 ]
 
 [project.scripts]
-bitnet-mlx = "bitnet_mlx.cli.main:main"
+bitnet-mlx = "bitnet_mlx.cli.main:app"
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0.0", "pytest-asyncio>=0.21.0", "black", "mypy", "ruff", "httpx"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
