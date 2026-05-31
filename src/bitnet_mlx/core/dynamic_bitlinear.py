@@ -1,4 +1,3 @@
-# src/bitnet_mlx/core/dynamic_bitlinear.py
 import mlx.core as mx
 import mlx.nn as nn
 from typing import Optional

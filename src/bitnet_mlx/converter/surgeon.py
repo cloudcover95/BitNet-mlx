@@ -1,4 +1,3 @@
-# src/bitnet_mlx/converter/surgeon.py
 import json
 import shutil
 import glob
@@ -19,11 +18,12 @@ class TopologySurgeon:
     def transmute(module: nn.Module) -> nn.Module:
         """
         Replaces FP16 manifolds with 1.58-bit ternary limits.
-        VLM-Aware: Isolates multimodal projectors, convolutions, and embeddings.
+        VLM & Audio Aware: Isolates projectors, 1D/2D convolutions, embeddings, and normalization.
         """
         skip_substrs = [
             "lm_head", "embed", "gate", "vision_proj", "multi_modal_projector", 
-            "conv", "patch_embedding", "wte", "wpe", "norm", "ln_"
+            "conv", "patch_embedding", "wte", "wpe", "norm", "ln_",
+            "audio_encoder", "mel"  # Audio safe-guards for Whisper architectures
         ]
         
         def _replace(mod: nn.Module, prefix: str = "") -> None:
@@ -43,7 +43,7 @@ class TopologySurgeon:
             console.print(f"[*] Ingesting FP16 topology from [bold cyan]{repo_id}[/bold cyan]...")
             model, _ = load(repo_id)
             
-            console.print("[*] Executing VLM-Safe Topological Transmutation...")
+            console.print("[*] Executing Multi-Modal Safe Topological Transmutation...")
             quantized_model = TopologySurgeon.transmute(model)
             
             out_path = Path(output_dir)
@@ -53,7 +53,7 @@ class TopologySurgeon:
             mx.save_safetensors(str(out_path / "model.safetensors"), dict(quantized_model.parameters()))
             
             # Fetch config/tokenizer assets bypassing heavy tensor files
-            local_dir = snapshot_download(repo_id, allow_patterns=["*.json", "*.model", "tokenizer*"])
+            local_dir = snapshot_download(repo_id, allow_patterns=["*.json", "*.model", "tokenizer*", "preprocessor*"])
             for file in glob.glob(f"{local_dir}/*"):
                 shutil.copy(file, out_path)
             

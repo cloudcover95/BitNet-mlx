@@ -1,4 +1,3 @@
-# src/bitnet_mlx/inference/engine.py
 import asyncio
 import time
 from typing import AsyncGenerator
@@ -13,6 +12,7 @@ class InjectionEngine:
         model, tokenizer = load(model_path)
         model = TopologySurgeon.transmute(model)
         
+        # Apply standard chat template if available
         if apply_template and hasattr(tokenizer, "apply_chat_template") and tokenizer.chat_template:
             prompt = tokenizer.apply_chat_template([{"role": "user", "content": prompt}], tokenize=False, add_generation_prompt=True)
             
@@ -24,7 +24,7 @@ class InjectionEngine:
         for token, _ in zip(generate_step(prompt_tokens, model), range(max_tokens)):
             token_count += 1
             yield tokenizer.decode([token.item()])
-            await asyncio.sleep(0.0)
+            await asyncio.sleep(0.0) # Unblock main event loop
             
         tps = token_count / (time.perf_counter() - start_time)
         yield f"\n\n[System] Inference complete. Throughput: {tps:.2f} tokens/sec."

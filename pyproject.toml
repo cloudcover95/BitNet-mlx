@@ -1,16 +1,15 @@
-# pyproject.toml
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitnet_mlx"
-version = "54.0.0"
-description = "Production-grade MLX-native 1.58-bit ternary SDK. Omni-hardware scaling powered by Spectral TDA."
+version = "55.0.0"
+description = "Production-grade MLX-native 1.58-bit ternary SDK. Omni-hardware scaling, TDA, and Swarm RPC."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
-keywords = ["mlx", "bitnet", "1.58-bit", "tda", "apple-silicon", "edge-ai", "juniorcloud", "fastapi"]
+keywords = ["mlx", "bitnet", "1.58-bit", "tda", "apple-silicon", "edge-ai", "juniorcloud", "fastapi", "zeromq"]
 authors = [{name = "JuniorCloud LLC"}]
 dependencies = [
     "mlx>=0.16.0",

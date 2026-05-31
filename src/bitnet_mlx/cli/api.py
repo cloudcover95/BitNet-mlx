@@ -1,4 +1,3 @@
-# src/bitnet_mlx/cli/api.py
 import time
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,7 +6,7 @@ from sse_starlette.sse import EventSourceResponse
 from typing import List, AsyncGenerator
 from ..inference.engine import InjectionEngine
 
-api = FastAPI(title="BitNet-MLX Sovereign API", version="54.0.0")
+api = FastAPI(title="BitNet-MLX Sovereign API", version="55.0.0")
 api.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 ACTIVE_MODEL_PATH = ""

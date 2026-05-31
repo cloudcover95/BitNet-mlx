@@ -1,4 +1,3 @@
-# src/bitnet_mlx/core/quantization.py
 import mlx.core as mx
 from typing import Tuple
 from .tda_math import TopologicalManifold

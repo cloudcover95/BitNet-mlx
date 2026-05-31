@@ -1,4 +1,3 @@
-# src/bitnet_mlx/cli/main.py
 import typer
 import asyncio
 import uvicorn
@@ -7,6 +6,7 @@ from rich.console import Console
 from ..converter.surgeon import TopologySurgeon
 from ..inference.engine import InjectionEngine
 from ..sandbox.suite import JuniorSandboxSuite
+from ..swarm.node import JuniorSwarmNode
 
 app = typer.Typer(help="BitNet-MLX Omni-Sovereign SDK by JuniorCloud LLC")
 console = Console()
@@ -37,6 +37,15 @@ def serve(model: str, host: str = "127.0.0.1", port: int = 8080):
     console.print(f"[bold green][*] Mounting Sovereign API on {host}:{port} with manifold: {model}[/bold green]")
     api_module.ACTIVE_MODEL_PATH = model
     uvicorn.run(api_module.api, host=host, port=port, log_level="info")
+
+@app.command()
+def swarm_node(mode: str = "orchestrator", target_ip: str = "127.0.0.1", port: int = 5555):
+    """Boot a JuniorSwarm ZeroMQ RPC Node (mode: orchestrator | worker)."""
+    node = JuniorSwarmNode(port=port, is_worker=(mode == "worker"))
+    if mode == "orchestrator":
+        asyncio.run(node.start_orchestrator())
+    else:
+        asyncio.run(node.start_worker(target_ip))
 
 if __name__ == "__main__":
     app()
