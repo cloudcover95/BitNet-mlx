@@ -1,8 +1,6 @@
 {
     "version": "2.0.0",
     "tasks": [
-        {"label": "BitNet: Evaluate TDA & Sandbox", "type": "shell", "command": "bitnet-mlx sandbox", "group": {"kind": "test", "isDefault": true}, "presentation": {"reveal": "always", "panel": "shared"}},
-        {"label": "BitNet: Train (QAT)", "type": "shell", "command": "bitnet-mlx train --mode qat --repo mlx-community/Phi-3-mini-4k-instruct", "group": "build", "presentation": {"reveal": "always", "panel": "shared"}},
-        {"label": "BitNet: Mount Sovereign API", "type": "shell", "command": "bitnet-mlx serve --model ./models/active-bitnet", "presentation": {"reveal": "always", "panel": "new"}}
+        {"label": "BitNet: Evaluate TDA Sandbox", "type": "shell", "command": "bitnet-mlx sandbox", "group": {"kind": "test", "isDefault": true}}
     ]
 }
