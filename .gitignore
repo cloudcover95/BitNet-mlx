@@ -1,0 +1,31 @@
+# BitNet-mlx .gitignore
+
+# Private off-grid emulation (MemSys BlackBox)
+private_blackbox/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Logs and data
+logs/
+data/
+*.parquet
+
+# Build
+build/
+dist/
+*.egg-info/
