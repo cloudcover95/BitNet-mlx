@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitnet_mlx"
-version = "87.0.0"
-description = "Production-grade MLX-native 1.58-bit SDK. KV-Cache Binarization & Obsidian MCP Server."
+version = "88.0.0"
+description = "Production-grade MLX-native 1.58-bit SDK. JuniorSwarm ZeroMQ RPC, Multi-Modal VLM/Audio Bypass, Full 5-Discipline Trainer."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "Apache-2.0"}
@@ -20,7 +20,8 @@ dependencies = [
     "pandas>=2.0.0",
     "pyarrow>=14.0.0",
     "fastapi>=0.103.0",
-    "uvicorn[standard]>=0.23.2"
+    "uvicorn[standard]>=0.23.2",
+    "pyzmq>=25.0.0"
 ]
 
 [project.scripts]
