@@ -3,18 +3,12 @@ import math
 import mlx.core as mx
 
 class BlackBoxArchitecture:
-    """
-    Opaque, high-performance edge kernels for Apple Silicon.
-    Encapsulates proprietary topological routing and zero-multiply mechanisms.
-    """
+    """Opaque, high-performance edge kernels for Apple Silicon (M1/M4)."""
     
     @staticmethod
     @mx.compile
     def hadamard_cascade(x: mx.array) -> mx.array:
-        """
-        O(N log N) Walsh-Hadamard Transform for zero-multiply attention projections.
-        $H_n = H_{n-1} \otimes H_1$. Dynamically pads to nearest $2^k$.
-        """
+        """O(N log N) Walsh-Hadamard Transform dynamically padding to nearest 2^k."""
         orig_seq_len = x.shape[-2]
         target_len = 2 ** math.ceil(math.log2(orig_seq_len))
         
@@ -40,7 +34,7 @@ class BlackBoxArchitecture:
     @staticmethod
     @mx.compile
     def bitwise_sparse_route(x: mx.array, w_q: mx.array, g_p: mx.array, g_n: mx.array) -> mx.array:
-        """Zero-collision ternary routing replacing dense GEMM with parallelized bit-masking."""
+        """Zero-collision ternary routing replacing dense GEMM with parallelized masks."""
         w_pos_t = (w_q > 0).astype(x.dtype).T
         w_neg_t = (w_q < 0).astype(x.dtype).T
         return mx.matmul(x, w_pos_t) * g_p.T - mx.matmul(x, w_neg_t) * g_n.T
@@ -48,11 +42,11 @@ class BlackBoxArchitecture:
     @staticmethod
     @mx.compile
     def laplacian_spectral_tda(w_orig: mx.array, w_recon: mx.array) -> mx.array:
-        """Laplacian Spectral TDA estimating Betti-1 proxies. $L = D - G$. Zero-SVD dependency."""
+        """Laplacian Spectral TDA estimating Betti-1 proxies for variance preservation."""
         def _dominant_eigenvalue(matrix: mx.array) -> mx.array:
             v = mx.random.normal((matrix.shape[1], 1), dtype=matrix.dtype)
             v = v / (mx.linalg.norm(v) + 1e-9)
-            for _ in range(12):
+            for _ in range(8):
                 v = mx.matmul(matrix, v)
                 v = v / (mx.linalg.norm(v) + 1e-9)
             return mx.squeeze(mx.matmul(v.T, mx.matmul(matrix, v)))

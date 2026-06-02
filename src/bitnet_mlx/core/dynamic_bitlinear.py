@@ -22,7 +22,7 @@ class DynamicBitLinear(nn.Module):
         scale_x = mx.max(mx.abs(x), axis=-1, keepdims=True) / q_max
         x_q_ste = x + mx.stop_gradient(mx.clip(mx.round(x / (scale_x + 1e-5)), -q_max, q_max) - x)
 
-        if self.use_hadamard:
+        if self.use_hadamard and x_q_ste.shape[-1] % 2 == 0:
             x_q_ste = BlackBoxArchitecture.hadamard_cascade(x_q_ste)
 
         y = BlackBoxArchitecture.bitwise_sparse_route(x_q_ste, w_raw, g_p, g_n)

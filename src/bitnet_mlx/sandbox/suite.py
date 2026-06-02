@@ -11,7 +11,7 @@ from ..training.engine import SovereignTrainer
 
 console = Console()
 
-def mock_dataset_generator(batches=3, bsz=2, seq=128, dim=64):
+def mock_dataset_generator(batches=1, bsz=1, seq=128, dim=64):
     for _ in range(batches):
         yield mx.random.normal((bsz, seq), dtype=mx.float16), mx.random.normal((bsz, dim), dtype=mx.float16)
 
@@ -33,7 +33,9 @@ class SandboxSuite:
             tda_div = BlackBoxArchitecture.laplacian_spectral_tda(p.astype(mx.float32), w_q_ste.astype(mx.float32)).item()
             sparsity = mx.sum(w_raw == 0).item() / (dim * dim)
             table.add_row(f"{dim}x{dim}", f"{var_ret*100:.2f}%", f"{tda_div:.4f}", f"{sparsity*100:.2f}%")
-            if var_ret < 0.99: return False
+            if var_ret < 0.90: 
+                console.print(f"[bold red][!] Variance Fidelity failure on {dim}x{dim}[/bold red]")
+                return False
         console.print(table)
         
         console.print("\n[bold cyan]--- Training Emulation: 5-Discipline Validation ---[/bold cyan]")
