@@ -1,10 +1,20 @@
 # BitNet-mlx
 
-**MLX-native 1.58-bit Ternary Quantization + Proprietary Blackbox**
+**MLX-native 1.58-bit Ternary Quantization + Proprietary Blackbox (V1.1)**
 
-## New in V1.0
-- `src/inference/proprietary_blackbox.py` — Full proprietary math kernel (SVD, KPZ, Identity Drift, Q-Mark)
-- `src/inference/quantization_calibration.py` — Production MLX quantization calibration (AbsMean + per-channel)
-- `run_offline_blackbox.py` — Air-gapped FastAPI server
+## V1.1 Production Hardening
+- Hardened `pyproject.toml` with hatchling packaging
+- Strict `.gitignore` for model weight quarantine
+- `Makefile` for consistent developer workflow
+- `tests/test_blackbox.py` for math kernel integrity
+- `scripts/validate_blackbox.sh` for air-gap security audit
 
-The engine now supports explicit quantization calibration before inference.
+This repository is now a fully isolated, sovereign, offline inference engine.
+
+## Quick Start
+
+```bash
+make install
+make test
+make run
+```

@@ -1,31 +1,21 @@
-# BitNet-mlx .gitignore
-
-# Private off-grid emulation (MemSys BlackBox)
-private_blackbox/
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Virtual environments
-.venv/
+# path: BitNet-mlx/.gitignore
+# Virtual Environments
 venv/
-ENV/
+junior_venv/
+.env/
 
-# IDE
-.vscode/
-.idea/
+# MLX Model Weights (CRITICAL: Never commit 1.58-bit tensors to git)
+*.safetensors
+*.gguf
+model.bin
+tokenizer.model
+model/
+models/
 
-# OS
-.DS_Store
-
-# Logs and data
-logs/
-data/
-*.parquet
-
-# Build
+# Python Cache & Build Artifacts
+__pycache__/
+*.pyc
 build/
 dist/
 *.egg-info/
+.pytest_cache/

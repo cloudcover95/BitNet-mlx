@@ -1,34 +1,28 @@
+# path: BitNet-mlx/pyproject.toml
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
-name = "bitnet_mlx"
-version = "88.0.0"
-description = "Production-grade MLX-native 1.58-bit SDK. JuniorSwarm ZeroMQ RPC, Multi-Modal VLM/Audio Bypass, Full 5-Discipline Trainer."
+name = "bitnet-mlx-blackbox"
+version = "1.1.0"
+description = "Air-Gapped Proprietary Math Kernel & 1.58-bit Inference"
+authors = [{name = "JuniorCloud LLC"}]
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "Apache-2.0"}
+
 dependencies = [
-    "mlx>=0.16.0",
-    "mlx-lm>=0.16.0",
-    "rich>=13.0.0",
-    "typer>=0.9.0",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.0",
     "pydantic>=2.0.0",
-    "pydantic-settings>=2.0.0",
-    "psutil>=5.9.0",
-    "pandas>=2.0.0",
-    "pyarrow>=14.0.0",
-    "fastapi>=0.103.0",
-    "uvicorn[standard]>=0.23.2",
-    "pyzmq>=25.0.0"
+    "mlx>=0.10.0",
+    "mlx-lm>=0.1.0"
 ]
 
-[project.scripts]
-bitnet-mlx = "bitnet_mlx.cli.main:app"
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
 [project.optional-dependencies]
-dev = ["pytest>=7.0.0"]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.3.0",
+    "build>=1.1.1"
+]
