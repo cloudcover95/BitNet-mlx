@@ -3,6 +3,8 @@ import time
 import mlx.core as mx
 import mlx_lm
 
+from .quantization_calibration import MLXQuantCalibrator
+
 
 class ProprietaryMathKernel:
     """
@@ -56,11 +58,13 @@ class ProprietaryMathKernel:
 class SovereignBitNetInference:
     """
     Extreme 1.58-bit quantization engine for local execution.
-    Translates the proprietary math state into strategic consensus.
+    Now supports MLX quantization calibration.
     """
 
-    def __init__(self, model_path: str = "mlx-community/bitnet-1.58b-mlx"):
+    def __init__(self, model_path: str = "mlx-community/bitnet-1.58b-mlx", calibrate: bool = True):
         self.math_kernel = ProprietaryMathKernel()
+        self.calibrator = MLXQuantCalibrator() if calibrate else None
+
         print(f"[+] Loading BitNet-MLX Offline Engine: {model_path}")
         try:
             self.model, self.tokenizer = mlx_lm.load(model_path)
@@ -105,3 +109,10 @@ class SovereignBitNetInference:
             "math_state": state_matrix,
             "bitnet_consensus": reasoning.strip()
         }
+
+    def calibrate_model_weights(self, weight_tensor: mx.array):
+        """Calibrate and quantize model weights using the internal calibrator."""
+        if self.calibrator is None:
+            raise RuntimeError("Calibration not enabled")
+        q_weight, scale = self.calibrator.calibrate_weights(weight_tensor, per_channel=True)
+        return q_weight, scale

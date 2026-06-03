@@ -1,5 +1,10 @@
-# BitNet-MLX: The Sovereign Training & Inference Matrix
-**Industry Standard MLX-native ternary SDK mapped with Black-Box Cascades.**
-Leverages proprietary synthesized modules including **Zero-Collision Bitwise Routing**, **Hadamard-Ternary Cascades**, and **Laplacian TDA Variance Preservers** for sovereign local execution. Fully supports 5-discipline training (QAT, LoRA, QLoRA, PTQ, Full).
+# BitNet-mlx
 
-JuniorCloud LLC | Lead Architect: First-principles mathematics. No bloated frameworks. No apologies.
+**MLX-native 1.58-bit Ternary Quantization + Proprietary Blackbox**
+
+## New in V1.0
+- `src/inference/proprietary_blackbox.py` — Full proprietary math kernel (SVD, KPZ, Identity Drift, Q-Mark)
+- `src/inference/quantization_calibration.py` — Production MLX quantization calibration (AbsMean + per-channel)
+- `run_offline_blackbox.py` — Air-gapped FastAPI server
+
+The engine now supports explicit quantization calibration before inference.
