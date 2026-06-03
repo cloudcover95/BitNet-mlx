@@ -1,15 +1,13 @@
 # BitNet-mlx
 
-**MLX-native 1.58-bit Ternary Quantization + Proprietary Blackbox (V1.1)**
+**MLX-native 1.58-bit Ternary Quantization + Proprietary Blackbox (V1.2)**
 
-## V1.1 Production Hardening
-- Hardened `pyproject.toml` with hatchling packaging
-- Strict `.gitignore` for model weight quarantine
-- `Makefile` for consistent developer workflow
-- `tests/test_blackbox.py` for math kernel integrity
-- `scripts/validate_blackbox.sh` for air-gap security audit
+## V1.2 Enterprise CI/CD
+- GitHub Actions workflow targeting `macos-latest` for native MLX/Metal testing
+- Hardened air-gap security auditor
+- Deterministic math kernel validation on Apple Silicon
 
-This repository is now a fully isolated, sovereign, offline inference engine.
+The CI now guarantees that all proprietary SVD/KPZ logic compiles and runs correctly on M-series hardware before merge.
 
 ## Quick Start
 

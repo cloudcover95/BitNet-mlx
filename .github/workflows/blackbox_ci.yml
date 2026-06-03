@@ -1,0 +1,45 @@
+# path: .github/workflows/blackbox_ci.yml
+name: BitNet-MLX Proprietary Blackbox CI
+
+on:
+  push:
+    branches: [ main, feature/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  offline_audit:
+    # CRITICAL: Runs on macOS for native MLX/Metal compilation
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: ["3.9"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install Offline Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .[dev]
+
+    - name: L0 Weight Quarantine Check
+      run: |
+        chmod +x scripts/validate_blackbox.sh
+        ./scripts/validate_blackbox.sh
+
+    - name: L1 Syntax & Import Formatting (Ruff)
+      run: |
+        pip install ruff
+        ruff check src/ tests/ run_offline_blackbox.py
+
+    - name: L2 Proprietary Math Kernel Tests (M-Series Hardware)
+      run: |
+        pip install pytest
+        pytest tests/ -v
