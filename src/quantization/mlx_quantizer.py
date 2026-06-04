@@ -1,10 +1,9 @@
 # path: BitNet-mlx/src/quantization/mlx_quantizer.py
 #!/usr/bin/env python3
 """
-MLX Quantizer
+MLX Quantizer (Kernel Integrated)
 
-Production-grade MLX-native implementation of 1.58-bit ternary quantization.
-Supports post-training quantization and direct inference on Apple Silicon.
+Now uses the custom Metal ternary matmul kernel for efficient inference.
 """
 
 import logging
@@ -15,30 +14,20 @@ import mlx.core as mx
 import numpy as np
 
 from .ternary_pipeline import TernaryPipeline
+from ..kernels.ternary_matmul import ternary_matmul
 
 logging.basicConfig(level=logging.INFO, format="[*] %(asctime)s - %(message)s")
 
 
 class MLXQuantizer:
-    """
-    MLX-native 1.58-bit ternary quantizer.
-    """
-
     def __init__(self, output_dim: int = 128):
         self.pipeline = TernaryPipeline(output_dim=output_dim)
-        logging.info("MLXQuantizer initialized")
+        logging.info("MLXQuantizer initialized with custom kernel support")
 
     def quantize_weights(self, weights: mx.array) -> Dict[str, Any]:
-        """
-        Quantize a weight matrix to ternary using the TDA pipeline.
-        Returns ternary weights + metadata.
-        """
-        # Convert to numpy for the analysis pipeline
         weights_np = np.array(weights)
-
         result = self.pipeline.run(weights_np)
 
-        # Create ternary weights in MLX
         ternary_weights = mx.array(result["projection"]["ternary_weights"])
 
         return {
@@ -50,33 +39,36 @@ class MLXQuantizer:
         }
 
     def quantize_linear_layer(self, weight: mx.array, bias: Optional[mx.array] = None) -> Dict[str, Any]:
-        """
-        Quantize a full linear layer (weight + optional bias).
-        """
         q_weight = self.quantize_weights(weight)
-
-        result = {
+        return {
             "weight": q_weight,
             "bias": bias,
             "is_quantized": True,
         }
 
-        if bias is not None:
-            result["bias"] = bias  # Bias usually kept in higher precision
-
-        return result
-
     def create_quantized_linear(self, in_features: int, out_features: int) -> Dict[str, Any]:
-        """
-        Create a new quantized linear layer with random init.
-        """
         weight = mx.random.normal((out_features, in_features))
         return self.quantize_linear_layer(weight)
 
     def matmul_ternary(self, a: mx.array, ternary_weight: mx.array) -> mx.array:
         """
-        Efficient ternary matrix multiplication.
-        In production this can be further optimized with custom Metal kernels.
+        Uses the custom optimized Metal kernel for ternary matmul.
         """
-        # Simple implementation - can be replaced with optimized kernel
-        return mx.matmul(a, ternary_weight.T)
+        return ternary_matmul(a, ternary_weight, transpose_b=True)
+
+    def forward_quantized_linear(
+        self, input_tensor: mx.array, quantized_layer: Dict[str, Any]
+    ) -> mx.array:
+        """
+        Full forward pass for a quantized linear layer using the kernel.
+        """
+        weight_info = quantized_layer["weight"]
+        ternary_w = weight_info["ternary_weights"]
+        bias = quantized_layer.get("bias")
+
+        out = self.matmul_ternary(input_tensor, ternary_w)
+
+        if bias is not None:
+            out = out + bias
+
+        return out
