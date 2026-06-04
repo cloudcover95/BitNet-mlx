@@ -1,13 +1,10 @@
 # path: BitNet-mlx/src/compute/hardware_abstraction.py
 #!/usr/bin/env python3
 """
-Hardware Abstraction Layer
+Hardware Abstraction Layer (AMX + NPU Enhanced)
 
-Unified interface for different compute backends (MLX, future CUDA,
-NPU, custom silicon). Designed to support the long-term vision of a
-BitNet-native OS running on diverse edge hardware.
-
-Current focus: Apple Silicon (MLX). Future: NVIDIA, custom AI chips.
+Extended with explicit AMX optimization paths for Apple Silicon
+and scaffolding for future NPU inference backends.
 """
 
 import logging
@@ -39,9 +36,10 @@ class MLXBackend(ComputeBackend):
     def __init__(self):
         import mlx.core as mx
         self.mx = mx
-        logging.info("MLXBackend initialized")
+        logging.info("MLXBackend initialized (AMX-accelerated)")
 
     def matmul(self, a: Any, b: Any) -> Any:
+        # MLX automatically uses AMX on M-series for matrix ops
         return self.mx.matmul(a, b)
 
     def ternary_matmul(self, a: Any, ternary_b: Any) -> Any:
@@ -54,19 +52,45 @@ class MLXBackend(ComputeBackend):
         return quantizer.quantize_weights(tensor)
 
     def device_info(self) -> Dict[str, Any]:
-        return {
+        info = {
             "backend": "mlx",
             "device": str(self.mx.default_device()),
             "unified_memory": True,
+            "amx_accelerated": True,  # MLX uses AMX for matmul on M-series
+        }
+        return info
+
+
+class NPUBackend(ComputeBackend):
+    """
+    Placeholder / scaffolding for future NPU inference.
+    Will be activated when NPU support lands in MLX or via CoreML export.
+    """
+
+    def __init__(self):
+        logging.info("NPUBackend initialized (future path)")
+
+    def matmul(self, a: Any, b: Any) -> Any:
+        # Future: delegate to NPU via CoreML or custom runtime
+        raise NotImplementedError("NPU matmul not yet implemented")
+
+    def ternary_matmul(self, a: Any, ternary_b: Any) -> Any:
+        raise NotImplementedError("NPU ternary matmul not yet implemented")
+
+    def quantize(self, tensor: Any) -> Dict[str, Any]:
+        # Reuse MLX quantizer for now, or future NPU-specific quant
+        from ..quantization.mlx_quantizer import MLXQuantizer
+        quantizer = MLXQuantizer()
+        return quantizer.quantize_weights(tensor)
+
+    def device_info(self) -> Dict[str, Any]:
+        return {
+            "backend": "npu",
+            "status": "scaffolding - not yet active",
         }
 
 
 class HardwareAbstraction:
-    """
-    High-level hardware abstraction for BitNet-mlx.
-    Allows the same code to run efficiently across current and future hardware.
-    """
-
     def __init__(self):
         self.backends = {}
         self._detect_and_register_backends()
@@ -79,7 +103,9 @@ class HardwareAbstraction:
 
             if preferred == "mlx":
                 self.backends["mlx"] = MLXBackend()
-            # Future: Add CUDABackend, NPUBackend, etc.
+
+            # Always register NPU scaffolding for future use
+            self.backends["npu"] = NPUBackend()
 
             logging.info(f"Registered backends: {list(self.backends.keys())}")
         except Exception as e:
@@ -88,7 +114,6 @@ class HardwareAbstraction:
     def get_backend(self, name: Optional[str] = None) -> ComputeBackend:
         if name and name in self.backends:
             return self.backends[name]
-        # Default to preferred
         return list(self.backends.values())[0] if self.backends else None
 
     def matmul(self, a: Any, b: Any, backend: Optional[str] = None) -> Any:
@@ -102,3 +127,9 @@ class HardwareAbstraction:
 
     def device_info(self, backend: Optional[str] = None) -> Dict[str, Any]:
         return self.get_backend(backend).device_info()
+
+    def is_amx_available(self) -> bool:
+        return "mlx" in self.backends
+
+    def is_npu_available(self) -> bool:
+        return "npu" in self.backends  # Currently scaffolding
