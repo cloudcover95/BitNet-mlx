@@ -1,18 +1,18 @@
 # path: BitNet-mlx/src/quantization/manifold_quantizer.py
 #!/usr/bin/env python3
 """
-ManifoldFoldingQuantizer (Direct Projection Style)
+ManifoldFoldingQuantizer (v131 - Pure Direct Projection)
 
-Further simplified toward "pure direct projection" philosophy
-(inspired by Gemma 4 unified decoder approach).
+Further streamlined toward minimal, direct projection path.
+Default behavior is now extremely simple and efficient:
 
-Core path is now extremely linear:
-Raw state → AbsMean scaling → Direct ternary projection
+Raw high-dimensional state → AbsMean scaling → Direct ternary {-1, 0, +1} projection
 
-All advanced operations (SVD, TDA, persistence) remain available
-but are opt-in to keep the default path as lightweight as possible.
+Advanced features (SVD reduction, full TDA, persistence) remain available
+but are opt-in to keep the hot path as lightweight as possible.
 
-Still maintained as a clean black box.
+This aligns with the unified, low-overhead projection philosophy
+seen in modern efficient models.
 """
 
 import logging
@@ -52,10 +52,10 @@ def abs_mean_quantization(state: Any, epsilon: float = 1e-5) -> Any:
 def fold_manifold(
     state: Any,
     output_dim: Optional[int] = None,
-    include_tda: bool = False,
+    include_advanced: bool = False,
 ) -> Dict[str, Any]:
     """
-    Core direct projection path (Gemma-like simplicity).
+    Core direct projection path (minimal and efficient).
     """
     arr = _to_numpy(state)
     ternary = abs_mean_quantization(arr)
@@ -63,11 +63,10 @@ def fold_manifold(
     result = {
         "ternary_embedding": _from_numpy(ternary, like=state),
         "original_shape": arr.shape,
-        "method": "direct_manifold_folding",
+        "method": "direct_projection",
     }
 
-    if output_dim is not None and arr.ndim >= 2:
-        # Optional SVD reduction (still available but not default)
+    if include_advanced and output_dim is not None and arr.ndim >= 2:
         try:
             U, S, Vt = np.linalg.svd(arr, full_matrices=False)
             k = min(output_dim, len(S))
@@ -78,7 +77,7 @@ def fold_manifold(
         except Exception:
             pass
 
-    if include_tda:
+    if include_advanced:
         from .manifold_quantizer import compute_ternary_tda, get_persistence_signature
         result["tda"] = compute_ternary_tda(ternary)
         result["persistence_signature"] = get_persistence_signature(ternary)
@@ -88,22 +87,17 @@ def fold_manifold(
 
 def fold_manifold_full(state: Any) -> Dict[str, Any]:
     """
-    Full-featured version (includes TDA + persistence by default).
-    Still uses the simplified direct projection core.
+    Full-featured version with advanced options enabled by default.
     """
-    return fold_manifold(state, include_tda=True)
+    return fold_manifold(state, include_advanced=True)
 
 
-def compute_ternary_tda(ternary_tensor: Any, max_dim: int = 2) -> Dict[str, Any]:
+def compute_ternary_tda(ternary_tensor: Any) -> Dict[str, Any]:
     arr = _to_numpy(ternary_tensor)
     unique_vals, counts = np.unique(arr, return_counts=True)
-    betti_0 = len(unique_vals)
-    persistence = {
-        str(int(v)): float(c) for v, c in zip(unique_vals, counts)
-    }
     return {
-        "betti_numbers": {"beta_0": betti_0},
-        "persistence": persistence,
+        "betti_numbers": {"beta_0": len(unique_vals)},
+        "persistence": {str(int(v)): float(c) for v, c in zip(unique_vals, counts)},
     }
 
 
@@ -119,14 +113,14 @@ def get_persistence_signature(ternary_tensor: Any) -> Dict[str, Any]:
 class ManifoldFoldingQuantizer:
     def __init__(self, output_dim: Optional[int] = None):
         self.output_dim = output_dim
-        logging.info("ManifoldFoldingQuantizer initialized (direct projection style)")
+        logging.info("ManifoldFoldingQuantizer initialized (pure direct projection style)")
 
-    def __call__(self, state: Any, include_tda: bool = True) -> Dict[str, Any]:
-        return fold_manifold(state, output_dim=self.output_dim, include_tda=include_tda)
+    def __call__(self, state: Any, include_advanced: bool = False) -> Dict[str, Any]:
+        return fold_manifold(state, output_dim=self.output_dim, include_advanced=include_advanced)
 
 
 # Simple black-box entry point
 _manifold_quantizer = ManifoldFoldingQuantizer()
 
 def fold_manifold_full(state: Any) -> Dict[str, Any]:
-    return _manifold_quantizer(state)
+    return _manifold_quantizer(state, include_advanced=True)
