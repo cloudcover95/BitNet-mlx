@@ -1,26 +1,29 @@
 # BitNet-mlx
 
-MLX-native 1.58-bit kernels for Apple Silicon (JuniorCloud LLC).
-Language + vision quant live here. EOS sheets, ports, and palace do **not**.
+MLX-native **1.58-bit ternary** kernels for Apple Silicon (JuniorCloud LLC).
+Weights live in \(\{-1,0,1\}\). This repo is the **quant math + Metal/MLX path**, not a social-tag demo and not the property library.
 
-## This repo
+## Quant
 
-- Ternary / AbsMean style maps on MLX
-- `src/vision_quant.py` — image/text trit path
-- Intended consumer: on-device inference on M-series
+- AbsMean: \(W_q = \mathrm{clip}(\mathrm{round}(W/\mathrm{mean}|W|),-1,1)\)
+- Sign-binarize when you explicitly want no zeros
+- BitLinear-style scaled dots for on-device layers
+- `src/vision_quant.py` — feature maps to trits (charts, frames, overlays), not app tags
 
-## Not this repo
+## Consumers
 
-JuniorLLM owns:
+| Repo | Role |
+|------|------|
+| JuniorLLM | Ports, Teqp EOS sheets, coolstore, `ports/layer_mgr.py` (phase → port) |
+| JuniorStock | Edge quant trading stack |
+| JuniorHome | Index only |
 
-- custom ports + `ports/layer_mgr.py` (phase → port)
-- JuniorTeqp / coolstore / palace (SIS pull does not reseal)
-- Draft compile gate, FieldCore port registration
-- `scripts/home_sync.py`, `scripts/prove_bitnet.py`
-
-Home index: `cloudcover95/JuniorHome` `docs/JUNIOR_TEQP.md`.
+Dense trit states route to AstraReason in JuniorLLM; sparse/coexist stay on FieldCore. That routing is **not** implemented here.
 
 ```bash
-# property table + layer report (JuniorLLM tree)
+# EOS + layer report lives next door
 PYTHONPATH=../JuniorLLM python ../JuniorLLM/scripts/layer_prod.py
+PYTHONPATH=../JuniorLLM python ../JuniorLLM/scripts/prove_bitnet.py
 ```
+
+MIT / project license as in-tree. Local-first.
