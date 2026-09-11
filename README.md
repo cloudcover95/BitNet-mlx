@@ -1,11 +1,26 @@
 # BitNet-mlx
 
-**Current Ecosystem State**
+MLX-native 1.58-bit kernels for Apple Silicon (JuniorCloud LLC).
+Language + vision quant live here. EOS sheets, ports, and palace do **not**.
 
-Added vision feature quantization support (`src/vision_quant.py`).
+## This repo
 
-This enables efficient 1.58-bit ternary processing for image/text tasks such as Instagram story zoom tag recognition.
+- Ternary / AbsMean style maps on MLX
+- `src/vision_quant.py` — image/text trit path
+- Intended consumer: on-device inference on M-series
 
-Integrates directly with VisionTextEngine in JuniorHome for sovereign, low-power on-device vision inference on Apple Silicon.
+## Not this repo
 
-The core BitNet-mlx library now supports both language and vision modalities with the same ultra-efficient ternary approach.
+JuniorLLM owns:
+
+- custom ports + `ports/layer_mgr.py` (phase → port)
+- JuniorTeqp / coolstore / palace (SIS pull does not reseal)
+- Draft compile gate, FieldCore port registration
+- `scripts/home_sync.py`, `scripts/prove_bitnet.py`
+
+Home index: `cloudcover95/JuniorHome` `docs/JUNIOR_TEQP.md`.
+
+```bash
+# property table + layer report (JuniorLLM tree)
+PYTHONPATH=../JuniorLLM python ../JuniorLLM/scripts/layer_prod.py
+```
